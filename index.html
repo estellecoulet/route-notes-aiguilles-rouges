@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head><link href="icon.PNG" rel="apple-touch-icon"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Route Notes — Tour des Aiguilles Rouges</title>
+<style>
+:root{--bg:#f5f2ea;--card:#fffdf8;--ink:#243128;--muted:#667169;--accent:#365c46;--accent2:#a05d38;--line:#ded9ce;--soft:#e9efe9;}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{max-width:980px;margin:auto;padding:24px 16px 64px}
+.cover{background:linear-gradient(135deg,#314c3b,#667b5a);color:white;border-radius:26px;padding:34px 28px;box-shadow:0 18px 48px #27382b25}
+.cover h1{margin:0;font-size:clamp(2rem,7vw,4.4rem);line-height:.98;letter-spacing:-.055em} .cover p{max-width:720px;font-size:1.05rem;opacity:.92}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px} .badge{background:#ffffff1f;border:1px solid #ffffff36;padding:7px 10px;border-radius:999px;font-size:.9rem}
+.topgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0 24px}
+.summary{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px} .summary h2{margin:0 0 8px;font-size:1.15rem}
+.summary .big{font-size:1.7rem;font-weight:800;letter-spacing:-.03em} .summary p{margin:5px 0;color:var(--muted);font-size:.92rem}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 22px} button,.linkbtn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 12px;border-radius:12px;font:inherit;text-decoration:none;cursor:pointer}
+button:hover,.linkbtn:hover{border-color:#9fa89f} .day{background:var(--card);border:1px solid var(--line);border-radius:20px;margin:12px 0;overflow:hidden;box-shadow:0 4px 18px #00000008}
+.day summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:17px 18px} .day summary::-webkit-details-marker{display:none}
+.daynum{width:42px;height:42px;border-radius:13px;background:var(--soft);display:grid;place-items:center;font-weight:900;color:var(--accent)} summary strong{display:block;font-size:1.08rem} summary small{display:block;color:var(--muted);margin-top:2px} .chev{font-size:1.5rem;transition:.2s} details[open] .chev{transform:rotate(180deg)}
+.daybody{border-top:1px solid var(--line);padding:18px} .hero{margin:0 0 18px;border-radius:16px;overflow:hidden;background:#ddd} .hero img{width:100%;height:300px;object-fit:cover;display:block} .hero figcaption{font-size:.78rem;color:var(--muted);padding:7px 10px;background:#faf8f2} a{color:var(--accent)}
+.variants{display:grid;grid-template-columns:1fr 1fr;gap:14px} .variant{border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0} .variant.long{border-top:4px solid var(--accent)} .variant.short{border-top:4px solid var(--accent2)} .variant h3{margin:0 0 12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px} .stats div{background:#f4f2ec;border-radius:10px;padding:9px} .stats b{display:block;font-size:1rem} .stats span{display:block;color:var(--muted);font-size:.72rem}
+.profile{width:100%;height:auto;margin:10px 0 2px;color:var(--accent)} .short .profile{color:var(--accent2)}
+.tablewrap{overflow:auto;margin-top:10px} table{width:100%;border-collapse:collapse;font-size:.83rem} th,td{text-align:left;padding:7px 6px;border-bottom:1px solid #ece8df;white-space:nowrap} th{color:var(--muted);font-weight:600}
+.tips{background:#eef2eb;border-radius:14px;padding:14px 16px;margin-top:14px} .tips h4{margin:0 0 7px} .tips ul{margin:0;padding-left:20px}
+.note{background:#fff8e8;border:1px solid #eadcb8;padding:13px 15px;border-radius:14px;margin:15px 0;color:#5e5032}
+.footer{color:var(--muted);font-size:.82rem;margin-top:28px;padding-top:18px;border-top:1px solid var(--line)} .footer a{overflow-wrap:anywhere}
+
+
+.segmented{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.segmented input{position:absolute;opacity:0;pointer-events:none}
+.segmented label{padding:9px 12px;cursor:pointer;border-right:1px solid var(--line);user-select:none}
+.segmented label:last-of-type{border-right:0}
+.segmented input:checked + label{background:var(--accent);color:white}
+body:has(#view-long:checked) .variant.short{display:none}
+body:has(#view-long:checked) .variants{grid-template-columns:1fr}
+body:has(#view-short:checked) .variant.long{display:none}
+body:has(#view-short:checked) .variants{grid-template-columns:1fr}
+
+body.show-long-only .variant.short{display:none}
+body.show-long-only .variants{grid-template-columns:1fr}
+body.show-short-only .variant.long{display:none}
+body.show-short-only .variants{grid-template-columns:1fr}
+
+@media(max-width:760px){.topgrid,.variants{grid-template-columns:1fr} .stats{grid-template-columns:1fr 1fr} .hero img{height:220px} .wrap{padding:12px 10px 40px} .cover{padding:27px 20px;border-radius:20px}}
+@media print{body{background:white} .controls{display:none} .day{break-inside:avoid;box-shadow:none} details.day{display:block} details.day>.daybody{display:block!important} .hero img{height:190px}}
+
+
+/* Simplified controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0 22px}
+.controls .linkbtn{flex:1 1 220px;text-align:center}
+
+/* Each route version is its own accordion */
+.variant{padding:0!important;overflow:hidden}
+.variant > summary{
+  cursor:pointer;
+  list-style:none;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px 15px;
+  font-weight:800;
+}
+.variant > summary::-webkit-details-marker{display:none}
+.variant > summary small{font-weight:600;color:var(--muted);font-size:.8rem}
+.variantbody{padding:0 15px 15px}
+.variant.long > summary{border-top:4px solid var(--accent)}
+.variant.short > summary{border-top:4px solid var(--accent2)}
+
+/* Mobile-friendly POI tables: no horizontal scroll required */
+.tablewrap{overflow:visible!important}
+table{table-layout:fixed;width:100%;font-size:.78rem}
+th,td{white-space:normal!important;padding:7px 4px!important;vertical-align:top}
+th:nth-child(1),td:nth-child(1){width:17%}
+th:nth-child(2),td:nth-child(2){width:18%}
+th:nth-child(3),td:nth-child(3){width:18%}
+th:nth-child(4),td:nth-child(4){width:47%}
+
+/* Photo fallback: no broken-image box */
+.hero.photo-link{
+  min-height:170px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#dae4d8,#b8c9b1);
+  color:var(--accent);
+}
+.hero.photo-link a{font-weight:800;text-decoration:none;font-size:1.05rem}
+
+.logistics{margin:28px 0;padding:20px}
+.logistics h2{margin-top:0}
+.logistics h3{margin-top:22px}
+.logistics table{font-size:.82rem}
+.logistics th:nth-child(1),.logistics td:nth-child(1){width:8%}
+.logistics th:nth-child(2),.logistics td:nth-child(2){width:20%}
+.logistics th:nth-child(3),.logistics td:nth-child(3){width:38%}
+.logistics th:nth-child(4),.logistics td:nth-child(4){width:34%}
+
+.logistics{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px;
+  margin:30px 0 18px;
+  box-shadow:0 5px 20px #00000008;
+}
+.logistics h2{margin:0 0 6px;font-size:1.55rem;letter-spacing:-.025em}
+.logistics h3{margin:25px 0 11px;font-size:1.05rem}
+.logistics-lead{color:var(--muted);margin:0;max-width:760px}
+.meal-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.meal-card{border:1px solid var(--line);border-radius:14px;padding:11px;background:#fbfaf6}
+.meal-card h4{margin:0 0 8px;font-size:1.1rem}
+.meal-line{border-radius:9px;padding:8px;margin:6px 0;font-size:.77rem}
+.meal-line b{display:block;margin-bottom:2px}
+.meal-line span{display:block}
+.meal-line.carry{background:#fff0df;color:#6a4527}
+.meal-line.onsite{background:#e4f1e7;color:#31583c}
+.meal-line.mixed{background:#eee9f7;color:#51416d}
+.meal-line.none{background:#eeeeeb;color:#65655e}
+.logistics-box{background:#f4f2ec;border-radius:13px;padding:12px 15px}
+.logistics-box ul{margin:0;padding-left:19px}
+.logistics-box li{margin:5px 0}
+.water-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.water-card{background:#eaf2f5;border:1px solid #cfdee4;border-radius:13px;padding:11px}
+.water-card h4{margin:0 0 5px;color:#345c6d}
+.water-card p{margin:0;font-size:.79rem}
+@media(max-width:850px){
+  .meal-grid,.water-grid{grid-template-columns:1fr}
+  .meal-card,.water-card{padding:12px 14px}
+}
+
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
+.legend-pill{padding:7px 10px;border-radius:999px;font-size:.78rem;font-weight:700}
+.legend-pill.carry{background:#fff0c9;color:#715216}
+.legend-pill.onsite{background:#e4f1e7;color:#31583c}
+.legend-pill.none{background:#ececea;color:#64645f}
+.meal-grid-v2{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.meal-card-v2{border:1px solid var(--line);border-radius:15px;padding:11px;background:#fbfaf6}
+.meal-card-v2 h4{margin:0 0 8px;font-size:1.08rem}
+.check-item{position:relative;margin:7px 0}
+.check-item input{position:absolute;opacity:0}
+.check-item label{display:block;border-radius:10px;padding:9px 9px 9px 34px;cursor:pointer;position:relative;font-size:.76rem;min-height:52px}
+.check-item label:before{content:"";position:absolute;left:10px;top:11px;width:15px;height:15px;border:2px solid currentColor;border-radius:4px;background:#fff8}
+.check-item input:checked + label:before{content:"✓";display:grid;place-items:center;font-weight:900;line-height:11px}
+.check-item input:checked + label{opacity:.58;text-decoration:line-through}
+.check-item label b{display:block;margin-bottom:2px}
+.check-item label span{display:block}
+.check-item.carry label{background:#fff0c9;color:#715216}
+.check-item.onsite label{background:#e4f1e7;color:#31583c}
+.check-item.none label{background:#ececea;color:#64645f}
+.quant-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.quant-card{border:1px solid var(--line);border-radius:15px;padding:13px;background:#fbfaf6}
+.quant-card h4{margin:0 0 4px}
+.quant-card>p{font-size:.78rem;color:var(--muted);margin:0 0 10px}
+.water-grid-v2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.water-card-v2{background:#eaf2f5;border:1px solid #cfdee4;border-radius:14px;padding:13px}
+.water-card-v2 h4{margin:0 0 8px;color:#345c6d}
+.water-line{display:grid;grid-template-columns:105px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #d8e5ea;font-size:.79rem}
+.water-line:last-of-type{border-bottom:0}
+.water-line b{color:#345c6d}
+.water-note{font-size:.76rem;color:#52666e;margin:9px 0 0;font-style:italic}
+@media(max-width:900px){
+ .meal-grid-v2,.quant-grid,.water-grid-v2{grid-template-columns:1fr}
+}
+
+.section-help{color:var(--muted);font-size:.86rem;margin-top:-4px}
+.meal-choice-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.meal-choice-card{border:1px solid var(--line);border-radius:15px;padding:12px;background:#fbfaf6}
+.meal-choice-card h4{margin:0 0 9px;font-size:1.1rem}
+.fixed-meal{border-radius:10px;padding:9px;margin:7px 0;font-size:.76rem}
+.fixed-meal b{display:block;margin-bottom:2px}
+.fixed-meal span{display:block}
+.fixed-meal.carry,.choice-option.carry label{background:#fff0c9;color:#715216}
+.fixed-meal.onsite,.choice-option.onsite label{background:#e4f1e7;color:#31583c}
+.fixed-meal.none{background:#ececea;color:#64645f}
+.meal-label{font-size:.75rem;font-weight:800;color:var(--muted);margin:10px 0 4px}
+.choice-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.choice-option{position:relative}
+.choice-option input{position:absolute;opacity:0;pointer-events:none}
+.choice-option label{
+  display:flex;align-items:flex-start;gap:7px;border-radius:10px;padding:9px;
+  cursor:pointer;font-size:.74rem;border:2px solid transparent;min-height:58px;opacity:.65;
+  transition:.15s ease;
+}
+.choice-mark{
+  width:16px;height:16px;border-radius:50%;border:2px solid currentColor;flex:0 0 auto;margin-top:1px;
+}
+.choice-option input:checked + label{
+  opacity:1;border-color:currentColor;box-shadow:0 3px 12px #00000012;transform:translateY(-1px);
+}
+.choice-option input:checked + label .choice-mark{
+  box-shadow:inset 0 0 0 4px #fff;background:currentColor;
+}
+.calc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.calc-card{border:1px solid var(--line);border-radius:15px;padding:13px;background:#fbfaf6}
+.calc-card h4{margin:0 0 8px}
+.calc-line{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #ece8df;font-size:.8rem}
+.calc-line:last-child{border-bottom:0}
+.calc-line b{font-size:.9rem}
+.calc-card.inactive{opacity:.55}
+.dynamic-note{margin-top:10px;padding:11px 13px;border-radius:12px;background:#eef2eb;font-size:.82rem}
+@media(max-width:900px){
+ .meal-choice-grid,.calc-grid{grid-template-columns:1fr}
+}
+
+
+/* Calculateur 100 % CSS : fonctionne même si le lecteur HTML bloque JavaScript */
+.calc-case,.route-case{display:none}
+.calc-line{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:baseline}
+.calc-line small{grid-column:1 / -1;color:var(--muted);font-size:.7rem;margin-top:-4px}
+.no-beaufort{margin:0;color:var(--muted);font-size:.82rem}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .calc-case[data-case="gittaz-coire-beaufort"],body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .route-case[data-case="gittaz-coire-beaufort"]{display:block}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) .calc-case[data-case="gittaz-coire-short"],body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) .route-case[data-case="gittaz-coire-short"]{display:block}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .calc-case[data-case="gittaz-carry-beaufort"],body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .route-case[data-case="gittaz-carry-beaufort"]{display:block}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) .calc-case[data-case="gittaz-carry-short"],body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) .route-case[data-case="gittaz-carry-short"]{display:block}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .calc-case[data-case="carry-coire-beaufort"],body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .route-case[data-case="carry-coire-beaufort"]{display:block}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) .calc-case[data-case="carry-coire-short"],body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) .route-case[data-case="carry-coire-short"]{display:block}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .calc-case[data-case="carry-carry-beaufort"],body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .route-case[data-case="carry-carry-beaufort"]{display:block}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) .calc-case[data-case="carry-carry-short"],body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) .route-case[data-case="carry-carry-short"]{display:block}
+.gear-section{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;margin:30px 0 18px;box-shadow:0 5px 20px #00000008}
+.gear-section h2{margin:0 0 6px;font-size:1.55rem}.gear-lead{margin:0;color:var(--muted)}
+.gear-dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 10px}.gear-stat{background:#f4f2ec;border-radius:13px;padding:13px}.gear-stat b{display:block;font-size:1.35rem}.gear-stat span{color:var(--muted);font-size:.78rem}
+.gear-progress-wrap{height:12px;background:#e5e1d7;border-radius:999px;overflow:hidden}.gear-progress-bar{height:100%;width:0;background:var(--accent);transition:width .2s}
+.gear-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}.gear-category{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fbfaf6}.gear-category>summary{cursor:pointer;list-style:none;padding:12px 13px;font-weight:800}.gear-category>summary::-webkit-details-marker{display:none}.gear-category-body{padding:0 10px 10px}
+.gear-item{position:relative;margin:6px 0}.gear-item input{position:absolute;opacity:0}.gear-item label{display:grid;grid-template-columns:1fr auto;gap:4px 10px;background:#f5f3ed;border:1px solid transparent;border-radius:10px;padding:9px 10px 9px 36px;cursor:pointer;position:relative;font-size:.79rem}.gear-item label:before{content:"";position:absolute;left:10px;top:10px;width:16px;height:16px;border:2px solid #748177;border-radius:4px;background:white}.gear-item input:checked+label{background:#e4f1e7;border-color:#b7d1bf}.gear-item input:checked+label:before{content:"✓";display:grid;place-items:center;background:var(--accent);color:white;border-color:var(--accent);font-weight:900}.gear-item-weight{font-weight:800;color:var(--muted)}
+.water-weight-control{margin-top:18px;background:#eaf2f5;border:1px solid #cfdee4;border-radius:14px;padding:14px}.water-weight-control h3{margin:0 0 4px}.water-weight-control p{margin:0 0 10px;color:#52666e;font-size:.82rem}.water-weight-control input[type=range]{width:100%}.water-weight-value{margin-top:6px;font-size:.86rem}.gear-note{background:#eef2eb;border-radius:13px;padding:11px 13px;font-size:.8rem;margin:12px 0}
+@media(max-width:800px){.gear-dashboard,.gear-grid{grid-template-columns:1fr}}
+
+
+.major-section{background:var(--card);border:1px solid var(--line);border-radius:20px;margin:14px 0;overflow:hidden;box-shadow:0 4px 18px #00000008}
+.major-section>summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:16px 18px}
+.major-section>summary::-webkit-details-marker{display:none}.major-icon{font-size:1.45rem}
+.major-section>summary strong{display:block;font-size:1.2rem}.major-section>summary small{display:block;color:var(--muted);margin-top:2px}
+.major-body{border-top:1px solid var(--line);padding:18px}
+.food-major .logistics-lead{margin-top:0}.water-major h3{margin-top:0}
+.shoe-choice-box{background:#f4f2ec;border-radius:13px;padding:12px 14px;margin:14px 0}.shoe-choice-box h3{margin:0 0 3px}.shoe-choice-box p{margin:0 0 8px;color:var(--muted);font-size:.8rem}.shoe-choice-box select{width:100%;padding:9px;border-radius:9px;border:1px solid var(--line);background:white}
+.gear-dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 10px}.gear-stat{background:#f4f2ec;border-radius:13px;padding:13px}.gear-stat b{display:block;font-size:1.2rem}.gear-stat span{font-size:.76rem;color:var(--muted)}
+.category-progress{display:flex;gap:5px;align-items:stretch;overflow-x:auto;padding:7px 0 12px}.category-segment{min-width:95px;flex:1}.category-segment-label{font-size:.62rem;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.category-dots{display:flex;gap:2px;margin-top:4px}.gear-dot{height:8px;background:#ddd8cf;flex:1;border-radius:3px;min-width:4px}.gear-dot.done{background:var(--accent)}
+.gear-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.gear-category{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fbfaf6}.gear-category>summary{cursor:pointer;list-style:none;padding:12px 13px;font-weight:800}.gear-category>summary::-webkit-details-marker{display:none}.gear-category-body{padding:0 10px 10px}
+.gear-item{position:relative;margin:6px 0}.gear-item input{position:absolute;opacity:0}.gear-item label{display:grid;grid-template-columns:1fr auto;gap:4px 10px;background:#f5f3ed;border:1px solid transparent;border-radius:10px;padding:9px 10px 9px 36px;cursor:pointer;position:relative;font-size:.79rem}.gear-item label:before{content:"";position:absolute;left:10px;top:10px;width:16px;height:16px;border:2px solid #748177;border-radius:4px;background:white}.gear-item input:checked+label{background:#e4f1e7;border-color:#b7d1bf}.gear-item input:checked+label:before{content:"✓";display:grid;place-items:center;background:var(--accent);color:white;border-color:var(--accent);font-weight:900}.gear-item-weight{font-weight:800;color:var(--muted);white-space:nowrap}.gear-item small{grid-column:1/-1;color:var(--muted);font-size:.68rem}
+.water-weight-control.compact{margin:10px 0 0}.water-weight-control.compact h4{margin:0 0 3px}.gear-note{background:#eef2eb;border-radius:13px;padding:11px 13px;font-size:.78rem;margin-top:12px}
+
+body:has(#gear-1:checked) .dot-gear-1{background:var(--accent)}
+body:has(#gear-2:checked) .dot-gear-2{background:var(--accent)}
+body:has(#gear-3:checked) .dot-gear-3{background:var(--accent)}
+body:has(#gear-4:checked) .dot-gear-4{background:var(--accent)}
+body:has(#gear-5:checked) .dot-gear-5{background:var(--accent)}
+body:has(#gear-6:checked) .dot-gear-6{background:var(--accent)}
+body:has(#gear-7:checked) .dot-gear-7{background:var(--accent)}
+body:has(#gear-8:checked) .dot-gear-8{background:var(--accent)}
+body:has(#gear-9:checked) .dot-gear-9{background:var(--accent)}
+body:has(#gear-10:checked) .dot-gear-10{background:var(--accent)}
+body:has(#gear-11:checked) .dot-gear-11{background:var(--accent)}
+body:has(#gear-12:checked) .dot-gear-12{background:var(--accent)}
+body:has(#gear-13:checked) .dot-gear-13{background:var(--accent)}
+body:has(#gear-14:checked) .dot-gear-14{background:var(--accent)}
+body:has(#gear-15:checked) .dot-gear-15{background:var(--accent)}
+body:has(#gear-16:checked) .dot-gear-16{background:var(--accent)}
+body:has(#gear-17:checked) .dot-gear-17{background:var(--accent)}
+body:has(#gear-18:checked) .dot-gear-18{background:var(--accent)}
+body:has(#gear-19:checked) .dot-gear-19{background:var(--accent)}
+body:has(#gear-20:checked) .dot-gear-20{background:var(--accent)}
+body:has(#gear-21:checked) .dot-gear-21{background:var(--accent)}
+body:has(#gear-22:checked) .dot-gear-22{background:var(--accent)}
+body:has(#gear-23:checked) .dot-gear-23{background:var(--accent)}
+body:has(#gear-24:checked) .dot-gear-24{background:var(--accent)}
+body:has(#gear-25:checked) .dot-gear-25{background:var(--accent)}
+body:has(#gear-26:checked) .dot-gear-26{background:var(--accent)}
+body:has(#gear-27:checked) .dot-gear-27{background:var(--accent)}
+body:has(#gear-28:checked) .dot-gear-28{background:var(--accent)}
+body:has(#gear-29:checked) .dot-gear-29{background:var(--accent)}
+body:has(#gear-30:checked) .dot-gear-30{background:var(--accent)}
+body:has(#gear-31:checked) .dot-gear-31{background:var(--accent)}
+body:has(#gear-32:checked) .dot-gear-32{background:var(--accent)}
+body:has(#gear-33:checked) .dot-gear-33{background:var(--accent)}
+body:has(#gear-34:checked) .dot-gear-34{background:var(--accent)}
+body:has(#gear-35:checked) .dot-gear-35{background:var(--accent)}
+body:has(#gear-36:checked) .dot-gear-36{background:var(--accent)}
+body:has(#gear-37:checked) .dot-gear-37{background:var(--accent)}
+body:has(#gear-38:checked) .dot-gear-38{background:var(--accent)}
+body:has(#gear-39:checked) .dot-gear-39{background:var(--accent)}
+body:has(#gear-40:checked) .dot-gear-40{background:var(--accent)}
+body:has(#gear-41:checked) .dot-gear-41{background:var(--accent)}
+body:has(#gear-42:checked) .dot-gear-42{background:var(--accent)}
+body:has(#gear-43:checked) .dot-gear-43{background:var(--accent)}
+body:has(#gear-44:checked) .dot-gear-44{background:var(--accent)}
+body:has(#gear-45:checked) .dot-gear-45{background:var(--accent)}
+body:has(#gear-46:checked) .dot-gear-46{background:var(--accent)}
+body:has(#gear-47:checked) .dot-gear-47{background:var(--accent)}
+body:has(#gear-48:checked) .dot-gear-48{background:var(--accent)}
+body:has(#gear-49:checked) .dot-gear-49{background:var(--accent)}
+body:has(#gear-50:checked) .dot-gear-50{background:var(--accent)}
+body:has(#gear-51:checked) .dot-gear-51{background:var(--accent)}
+body:has(#gear-52:checked) .dot-gear-52{background:var(--accent)}
+body:has(#gear-53:checked) .dot-gear-53{background:var(--accent)}
+body:has(#gear-54:checked) .dot-gear-54{background:var(--accent)}
+body:has(#gear-55:checked) .dot-gear-55{background:var(--accent)}
+body:has(#gear-56:checked) .dot-gear-56{background:var(--accent)}
+body:has(#gear-57:checked) .dot-gear-57{background:var(--accent)}
+body:has(#gear-58:checked) .dot-gear-58{background:var(--accent)}
+body:has(#gear-59:checked) .dot-gear-59{background:var(--accent)}
+body:has(#gear-60:checked) .dot-gear-60{background:var(--accent)}
+body:has(#gear-61:checked) .dot-gear-61{background:var(--accent)}
+body:has(#gear-62:checked) .dot-gear-62{background:var(--accent)}
+body:has(#gear-63:checked) .dot-gear-63{background:var(--accent)}
+body:has(#gear-64:checked) .dot-gear-64{background:var(--accent)}
+body:has(#gear-65:checked) .dot-gear-65{background:var(--accent)}
+body:has(#gear-66:checked) .dot-gear-66{background:var(--accent)}
+body:has(#gear-67:checked) .dot-gear-67{background:var(--accent)}
+@media(max-width:800px){.gear-dashboard,.gear-grid{grid-template-columns:1fr}.category-progress{display:grid;grid-template-columns:1fr 1fr}}
+
+
+/* Gear calculations fallback: 100% CSS, works even when JS is blocked */
+.gear-body{counter-reset:done 0 packNow 0 packTotal 0 wornNow 0 wornTotal 0;display:flex;flex-direction:column}
+.shoe-choice-box{order:-4}
+.category-progress{order:-3}
+.gear-dashboard{order:-2}
+.gear-grid{order:0}
+.gear-note{order:1}
+.gear-check:checked + label{counter-increment:done 1}
+.gear-progress-output::after{content:counter(done) " / 67"}
+.pack-weight-output::after{content:counter(packNow) " g / " counter(packTotal) " g"}
+.worn-weight-output::after{content:counter(wornNow) " g / " counter(wornTotal) " g"}
+.shoe-weight-case,.food-case{display:none}
+body:has(input[name="shoe-choice"][value="430"]:checked) .shoe-430{display:inline}
+body:has(input[name="shoe-choice"][value="700"]:checked) .shoe-700{display:inline}
+.choice-option.neutral label{background:#eef0ef;color:#465149}
+.water-choice-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.water-choice{position:relative}
+.water-choice input{position:absolute;opacity:0}
+.water-choice label{display:block;text-align:center;padding:8px 4px;border-radius:9px;background:#eaf2f5;border:2px solid transparent;cursor:pointer;font-size:.75rem}
+.water-choice input:checked+label{border-color:#345c6d;background:#d8e9ef;font-weight:800}
+
+#gear-2+label{counter-increment:wornTotal 60}
+#gear-2:checked+label{counter-increment:wornNow 60}
+#gear-3+label{counter-increment:wornTotal 60}
+#gear-3:checked+label{counter-increment:wornNow 60}
+#gear-4+label{counter-increment:wornTotal 30}
+#gear-4:checked+label{counter-increment:wornNow 30}
+#gear-5+label{counter-increment:wornTotal 450}
+#gear-5:checked+label{counter-increment:wornNow 450}
+#gear-6+label{counter-increment:wornTotal 180}
+#gear-6:checked+label{counter-increment:wornNow 180}
+#gear-7+label{counter-increment:wornTotal 140}
+#gear-7:checked+label{counter-increment:wornNow 140}
+#gear-8+label{counter-increment:wornTotal 50}
+#gear-8:checked+label{counter-increment:wornNow 50}
+#gear-9+label{counter-increment:wornTotal 70}
+#gear-9:checked+label{counter-increment:wornNow 70}
+#gear-10+label{counter-increment:packTotal 50}
+#gear-10:checked+label{counter-increment:packNow 50}
+#gear-11+label{counter-increment:packTotal 320}
+#gear-11:checked+label{counter-increment:packNow 320}
+#gear-12+label{counter-increment:packTotal 300}
+#gear-12:checked+label{counter-increment:packNow 300}
+#gear-13+label{counter-increment:packTotal 350}
+#gear-13:checked+label{counter-increment:packNow 350}
+#gear-14+label{counter-increment:packTotal 180}
+#gear-14:checked+label{counter-increment:packNow 180}
+#gear-15+label{counter-increment:packTotal 250}
+#gear-15:checked+label{counter-increment:packNow 250}
+#gear-16+label{counter-increment:packTotal 60}
+#gear-16:checked+label{counter-increment:packNow 60}
+#gear-17+label{counter-increment:packTotal 310}
+#gear-17:checked+label{counter-increment:packNow 310}
+#gear-18+label{counter-increment:packTotal 180}
+#gear-18:checked+label{counter-increment:packNow 180}
+#gear-19+label{counter-increment:packTotal 140}
+#gear-19:checked+label{counter-increment:packNow 140}
+#gear-20+label{counter-increment:packTotal 50}
+#gear-20:checked+label{counter-increment:packNow 50}
+#gear-21+label{counter-increment:packTotal 50}
+#gear-21:checked+label{counter-increment:packNow 50}
+#gear-22+label{counter-increment:packTotal 0}
+#gear-22:checked+label{counter-increment:packNow 0}
+#gear-23+label{counter-increment:packTotal 510}
+#gear-23:checked+label{counter-increment:packNow 510}
+#gear-24+label{counter-increment:packTotal 140}
+#gear-24:checked+label{counter-increment:packNow 140}
+#gear-25+label{counter-increment:packTotal 60}
+#gear-25:checked+label{counter-increment:packNow 60}
+#gear-26+label{counter-increment:packTotal 900}
+#gear-26:checked+label{counter-increment:packNow 900}
+#gear-27+label{counter-increment:packTotal 1500}
+#gear-27:checked+label{counter-increment:packNow 1500}
+#gear-28+label{counter-increment:packTotal 150}
+#gear-28:checked+label{counter-increment:packNow 150}
+#gear-29+label{counter-increment:packTotal 50}
+#gear-29:checked+label{counter-increment:packNow 50}
+#gear-30+label{counter-increment:packTotal 230}
+#gear-30:checked+label{counter-increment:packNow 230}
+#gear-31+label{counter-increment:packTotal 40}
+#gear-31:checked+label{counter-increment:packNow 40}
+#gear-32+label{counter-increment:packTotal 20}
+#gear-32:checked+label{counter-increment:packNow 20}
+#gear-33+label{counter-increment:packTotal 60}
+#gear-33:checked+label{counter-increment:packNow 60}
+#gear-34+label{counter-increment:packTotal 250}
+#gear-34:checked+label{counter-increment:packNow 250}
+#gear-35+label{counter-increment:packTotal 20}
+#gear-35:checked+label{counter-increment:packNow 20}
+#gear-36+label{counter-increment:packTotal 20}
+#gear-36:checked+label{counter-increment:packNow 20}
+#gear-37+label{counter-increment:packTotal 80}
+#gear-37:checked+label{counter-increment:packNow 80}
+#gear-38+label{counter-increment:packTotal 140}
+#gear-38:checked+label{counter-increment:packNow 140}
+#gear-44+label{counter-increment:packTotal 100}
+#gear-44:checked+label{counter-increment:packNow 100}
+#gear-45+label{counter-increment:packTotal 220}
+#gear-45:checked+label{counter-increment:packNow 220}
+#gear-46+label{counter-increment:packTotal 60}
+#gear-46:checked+label{counter-increment:packNow 60}
+#gear-47+label{counter-increment:packTotal 300}
+#gear-47:checked+label{counter-increment:packNow 300}
+#gear-48+label{counter-increment:packTotal 120}
+#gear-48:checked+label{counter-increment:packNow 120}
+#gear-49+label{counter-increment:packTotal 20}
+#gear-49:checked+label{counter-increment:packNow 20}
+#gear-50+label{counter-increment:packTotal 20}
+#gear-50:checked+label{counter-increment:packNow 20}
+#gear-51+label{counter-increment:packTotal 0}
+#gear-51:checked+label{counter-increment:packNow 0}
+#gear-52+label{counter-increment:packTotal 800}
+#gear-52:checked+label{counter-increment:packNow 800}
+#gear-53+label{counter-increment:packTotal 90}
+#gear-53:checked+label{counter-increment:packNow 90}
+#gear-54+label{counter-increment:packTotal 30}
+#gear-54:checked+label{counter-increment:packNow 30}
+#gear-55+label{counter-increment:packTotal 40}
+#gear-55:checked+label{counter-increment:packNow 40}
+#gear-56+label{counter-increment:packTotal 500}
+#gear-56:checked+label{counter-increment:packNow 500}
+#gear-57+label{counter-increment:packTotal 50}
+#gear-57:checked+label{counter-increment:packNow 50}
+#gear-58+label{counter-increment:packTotal 80}
+#gear-58:checked+label{counter-increment:packNow 80}
+#gear-59+label{counter-increment:packTotal 50}
+#gear-59:checked+label{counter-increment:packNow 50}
+#gear-60+label{counter-increment:packTotal 40}
+#gear-60:checked+label{counter-increment:packNow 40}
+#gear-61+label{counter-increment:packTotal 120}
+#gear-61:checked+label{counter-increment:packNow 120}
+#gear-62+label{counter-increment:packTotal 40}
+#gear-62:checked+label{counter-increment:packNow 40}
+#gear-63+label{counter-increment:packTotal 50}
+#gear-63:checked+label{counter-increment:packNow 50}
+#gear-64+label{counter-increment:packTotal 70}
+#gear-64:checked+label{counter-increment:packNow 70}
+#gear-65+label{counter-increment:packTotal 50}
+#gear-65:checked+label{counter-increment:packNow 50}
+#gear-66+label{counter-increment:packTotal 120}
+#gear-66:checked+label{counter-increment:packNow 120}
+#gear-67+label{counter-increment:packTotal 800}
+#gear-67:checked+label{counter-increment:packNow 800}
+body:has(input[name="shoe-choice"][value="430"]:checked) #gear-1+label{counter-increment:wornTotal 430}
+body:has(input[name="shoe-choice"][value="430"]:checked) #gear-1:checked+label{counter-increment:wornNow 430}
+body:has(input[name="shoe-choice"][value="700"]:checked) #gear-1+label{counter-increment:wornTotal 700}
+body:has(input[name="shoe-choice"][value="700"]:checked) #gear-1:checked+label{counter-increment:wornNow 700}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .food-case-gittaz-coire-beaufort{display:inline}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39+label{counter-increment:packTotal 750}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39:checked+label{counter-increment:packNow 750}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41+label{counter-increment:packTotal 280}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41:checked+label{counter-increment:packNow 280}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42+label{counter-increment:packTotal 300}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42:checked+label{counter-increment:packNow 300}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43+label{counter-increment:packTotal 700}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43:checked+label{counter-increment:packNow 700}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) .food-case-gittaz-coire-short{display:inline}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39:checked+label{counter-increment:packNow 1000}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41+label{counter-increment:packTotal 420}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41:checked+label{counter-increment:packNow 420}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42+label{counter-increment:packTotal 900}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42:checked+label{counter-increment:packNow 900}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43:checked+label{counter-increment:packNow 1000}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .food-case-gittaz-carry-beaufort{display:inline}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39+label{counter-increment:packTotal 750}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39:checked+label{counter-increment:packNow 750}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41+label{counter-increment:packTotal 280}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41:checked+label{counter-increment:packNow 280}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42+label{counter-increment:packTotal 600}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42:checked+label{counter-increment:packNow 600}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43+label{counter-increment:packTotal 700}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43:checked+label{counter-increment:packNow 700}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) .food-case-gittaz-carry-short{display:inline}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39:checked+label{counter-increment:packNow 1000}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41+label{counter-increment:packTotal 420}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41:checked+label{counter-increment:packNow 420}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42+label{counter-increment:packTotal 1200}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42:checked+label{counter-increment:packNow 1200}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="gittaz"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43:checked+label{counter-increment:packNow 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .food-case-carry-coire-beaufort{display:inline}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39+label{counter-increment:packTotal 750}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39:checked+label{counter-increment:packNow 750}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41+label{counter-increment:packTotal 420}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41:checked+label{counter-increment:packNow 420}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42+label{counter-increment:packTotal 300}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42:checked+label{counter-increment:packNow 300}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43+label{counter-increment:packTotal 700}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43:checked+label{counter-increment:packNow 700}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) .food-case-carry-coire-short{display:inline}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39:checked+label{counter-increment:packNow 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41+label{counter-increment:packTotal 560}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41:checked+label{counter-increment:packNow 560}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42+label{counter-increment:packTotal 900}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42:checked+label{counter-increment:packNow 900}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="coire"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43:checked+label{counter-increment:packNow 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) .food-case-carry-carry-beaufort{display:inline}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39+label{counter-increment:packTotal 750}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-39:checked+label{counter-increment:packNow 750}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41+label{counter-increment:packTotal 420}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-41:checked+label{counter-increment:packNow 420}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42+label{counter-increment:packTotal 600}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-42:checked+label{counter-increment:packNow 600}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43+label{counter-increment:packTotal 700}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="beaufort"]:checked) #gear-43:checked+label{counter-increment:packNow 700}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) .food-case-carry-carry-short{display:inline}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-39:checked+label{counter-increment:packNow 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40+label{counter-increment:packTotal 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-40:checked+label{counter-increment:packNow 20}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41+label{counter-increment:packTotal 560}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-41:checked+label{counter-increment:packNow 560}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42+label{counter-increment:packTotal 1200}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-42:checked+label{counter-increment:packNow 1200}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43+label{counter-increment:packTotal 1000}
+body:has(input[name="j1-dinner"][value="carry"]:checked):has(input[name="j3-lunch"][value="carry"]:checked):has(input[name="j4-route"][value="short"]:checked) #gear-43:checked+label{counter-increment:packNow 1000}
+body:has(#water-0:checked) .gear-dashboard{counter-increment:packNow 0 packTotal 0}
+body:has(#water-1:checked) .gear-dashboard{counter-increment:packNow 500 packTotal 500}
+body:has(#water-2:checked) .gear-dashboard{counter-increment:packNow 1000 packTotal 1000}
+body:has(#water-3:checked) .gear-dashboard{counter-increment:packNow 1500 packTotal 1500}
+body:has(#water-4:checked) .gear-dashboard{counter-increment:packNow 2000 packTotal 2000}
+body:has(#water-5:checked) .gear-dashboard{counter-increment:packNow 2500 packTotal 2500}
+body:has(#water-6:checked) .gear-dashboard{counter-increment:packNow 3000 packTotal 3000}
+.major-section>summary{display:grid;grid-template-columns:auto 1fr auto;align-items:center}
+.major-section>summary .chev{font-size:1.5rem;transition:.2s}
+.major-section[open]>summary .chev{transform:rotate(180deg)}
+
+
+.water-choice-grid{
+  display:grid !important;
+  grid-template-columns:repeat(7,minmax(44px,1fr)) !important;
+  gap:5px !important;
+}
+.water-choice label{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  padding:8px 3px !important;
+}
+
+/* Pourcentage de checklist 100 % CSS, sans JavaScript */
+.gear-body{counter-reset:gearPct 0 packNow 0 packTotal 0 wornNow 0 wornTotal 0}
+#gear-1:checked + label{counter-increment:gearPct 2;}
+#gear-2:checked + label{counter-increment:gearPct 2;}
+#gear-3:checked + label{counter-increment:gearPct 2;}
+#gear-4:checked + label{counter-increment:gearPct 2;}
+#gear-5:checked + label{counter-increment:gearPct 2;}
+#gear-6:checked + label{counter-increment:gearPct 2;}
+#gear-7:checked + label{counter-increment:gearPct 2;}
+#gear-8:checked + label{counter-increment:gearPct 2;}
+#gear-9:checked + label{counter-increment:gearPct 2;}
+#gear-10:checked + label{counter-increment:gearPct 2;}
+#gear-11:checked + label{counter-increment:gearPct 2;}
+#gear-12:checked + label{counter-increment:gearPct 2;}
+#gear-13:checked + label{counter-increment:gearPct 2;}
+#gear-14:checked + label{counter-increment:gearPct 2;}
+#gear-15:checked + label{counter-increment:gearPct 2;}
+#gear-16:checked + label{counter-increment:gearPct 2;}
+#gear-17:checked + label{counter-increment:gearPct 2;}
+#gear-18:checked + label{counter-increment:gearPct 2;}
+#gear-19:checked + label{counter-increment:gearPct 2;}
+#gear-20:checked + label{counter-increment:gearPct 2;}
+#gear-21:checked + label{counter-increment:gearPct 2;}
+#gear-22:checked + label{counter-increment:gearPct 2;}
+#gear-23:checked + label{counter-increment:gearPct 2;}
+#gear-24:checked + label{counter-increment:gearPct 2;}
+#gear-25:checked + label{counter-increment:gearPct 2;}
+#gear-26:checked + label{counter-increment:gearPct 2;}
+#gear-27:checked + label{counter-increment:gearPct 2;}
+#gear-28:checked + label{counter-increment:gearPct 2;}
+#gear-29:checked + label{counter-increment:gearPct 2;}
+#gear-30:checked + label{counter-increment:gearPct 2;}
+#gear-31:checked + label{counter-increment:gearPct 2;}
+#gear-32:checked + label{counter-increment:gearPct 2;}
+#gear-33:checked + label{counter-increment:gearPct 2;}
+#gear-34:checked + label{counter-increment:gearPct 1;}
+#gear-35:checked + label{counter-increment:gearPct 1;}
+#gear-36:checked + label{counter-increment:gearPct 1;}
+#gear-37:checked + label{counter-increment:gearPct 1;}
+#gear-38:checked + label{counter-increment:gearPct 1;}
+#gear-39:checked + label{counter-increment:gearPct 1;}
+#gear-40:checked + label{counter-increment:gearPct 1;}
+#gear-41:checked + label{counter-increment:gearPct 1;}
+#gear-42:checked + label{counter-increment:gearPct 1;}
+#gear-43:checked + label{counter-increment:gearPct 1;}
+#gear-44:checked + label{counter-increment:gearPct 1;}
+#gear-45:checked + label{counter-increment:gearPct 1;}
+#gear-46:checked + label{counter-increment:gearPct 1;}
+#gear-47:checked + label{counter-increment:gearPct 1;}
+#gear-48:checked + label{counter-increment:gearPct 1;}
+#gear-49:checked + label{counter-increment:gearPct 1;}
+#gear-50:checked + label{counter-increment:gearPct 1;}
+#gear-51:checked + label{counter-increment:gearPct 1;}
+#gear-52:checked + label{counter-increment:gearPct 1;}
+#gear-53:checked + label{counter-increment:gearPct 1;}
+#gear-54:checked + label{counter-increment:gearPct 1;}
+#gear-55:checked + label{counter-increment:gearPct 1;}
+#gear-56:checked + label{counter-increment:gearPct 1;}
+#gear-57:checked + label{counter-increment:gearPct 1;}
+#gear-58:checked + label{counter-increment:gearPct 1;}
+#gear-59:checked + label{counter-increment:gearPct 1;}
+#gear-60:checked + label{counter-increment:gearPct 1;}
+#gear-61:checked + label{counter-increment:gearPct 1;}
+#gear-62:checked + label{counter-increment:gearPct 1;}
+#gear-63:checked + label{counter-increment:gearPct 1;}
+#gear-64:checked + label{counter-increment:gearPct 1;}
+#gear-65:checked + label{counter-increment:gearPct 1;}
+#gear-66:checked + label{counter-increment:gearPct 1;}
+#gear-67:checked + label{counter-increment:gearPct 1;}
+
+.gear-progress-output::after{
+  content:counter(gearPct) " %" !important;
+}
+
+/* Eau : 7 boutons sur une seule ligne, y compris sur petit écran */
+.water-choice-grid{
+  grid-template-columns:repeat(7,minmax(0,1fr)) !important;
+  gap:3px !important;
+  width:100%;
+}
+.water-choice label{
+  padding:7px 1px !important;
+  font-size:.68rem !important;
+  min-width:0 !important;
+  white-space:nowrap !important;
+}
+@media(max-width:430px){
+  .water-choice-grid{gap:2px !important}
+  .water-choice label{font-size:.62rem !important;padding:7px 0 !important}
+}
+
+.photo-placeholder-exact{width:100%;min-height:230px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e8e2d7,#d8e3d9);color:#45604e;font-weight:800}
+.tar-calc-case{display:none}
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-calc-case[data-case="refuge-refuge-carry"],
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-calc-case[data-case="refuge-refuge-montenvers"],
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-calc-case[data-case="refuge-carry-carry"],
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-calc-case[data-case="refuge-carry-montenvers"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-calc-case[data-case="carry-refuge-carry"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-calc-case[data-case="carry-refuge-montenvers"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-calc-case[data-case="carry-carry-carry"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-calc-case[data-case="carry-carry-montenvers"]{display:block}
+
+@media(min-width:850px){
+  .calc-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+.tar-food-weight{display:none}
+.tar-food-detail{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-food-weight[data-case="refuge-refuge-carry"],
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-food-weight[data-case="refuge-refuge-montenvers"],
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-food-weight[data-case="refuge-carry-carry"],
+body:has(input[name="tar-j2-lunch"][value="refuge"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-food-weight[data-case="refuge-carry-montenvers"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-food-weight[data-case="carry-refuge-carry"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="refuge"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-food-weight[data-case="carry-refuge-montenvers"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="carry"]:checked) .tar-food-weight[data-case="carry-carry-carry"],
+body:has(input[name="tar-j2-lunch"][value="carry"]:checked):has(input[name="tar-j3-lunch"][value="carry"]:checked):has(input[name="tar-j4-lunch"][value="montenvers"]:checked) .tar-food-weight[data-case="carry-carry-montenvers"]{display:inline}
+
+.save-local-box{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+margin:18px 0 8px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);
+font-size:.84rem;color:var(--muted)}
+.save-local-box button{padding:7px 10px;font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="cover">
+<h1>Route Notes<br/>Tour des Aiguilles Rouges</h1>
+<p>17 → 21 août 2026 · 5 jours · itinérance</p>
+<div class="badges"><span class="badge">⛺ 2 bivouacs</span><span class="badge">🏡 2 nuits en vallée</span><span class="badge">🏔️ Aiguilles Rouges</span><span class="badge">🌄 Vues Mont-Blanc</span><span class="badge">🚆 Échappatoires faciles</span></div>
+</section>
+<div class="topgrid">
+<div class="summary"><h2>La boucle</h2><div class="big">65,7 km · ≈ +4 100 m</div><p>Gaillants → Servoz → Villy → La Joux → Lac Bleu → Gaillants.</p></div>
+<div class="summary"><h2>Nuits</h2><div class="big">Servoz · Villy · La Joux · Lac Bleu</div><p>Deux nuits en vallée pour travailler et se ravitailler, deux bivouacs en milieu naturel.</p></div>
+</div>
+<div class="note"><b>Horaires :</b> estimations avec un départ autour de 09:00. Les journées restent volontairement raisonnables pour garder du temps de travail et des marges de sécurité.</div>
+<div class="controls"><a class="linkbtn" href="https://reseaux.orange.fr/les-cartes-de-couverture/mobile-3g-4g-5g" rel="noopener" target="_blank">Carte réseau Orange</a><a class="linkbtn" href="https://meteofrance.com/meteo-montagne/alpes-du-nord" rel="noopener" target="_blank">Météo Alpes du Nord</a></div><details class="day">
+<summary><span class="daynum">J1</span><span><strong>Gaillants → Servoz</strong><small>Première journée d’entrée dans l’itinérance. Une étape courte qui traverse les hauteurs avant de redescendre dormir à Servoz.</small></span><span class="chev">⌄</span></summary>
+<div class="daybody">
+<figure class="hero"><div class="photo-placeholder-exact">Photo J1 à ajouter</div><figcaption>Photo J1 à ajouter</figcaption></figure>
+<div class="variants">
+<details class="variant long" open=""><summary><span>Étape</span><small>11.0 km · +660 m</small></summary><div class="variantbody">
+<div class="stats">
+<div><b>11.0 km</b><span>distance</span></div>
+<div><b>+660 m</b><span>D+</span></div>
+<div><b>−870 m</b><span>D−</span></div>
+<div><b>~4 h</b><span>marche + pauses courtes</span></div>
+</div>
+<svg aria-label="Profil altimétrique" class="profile" role="img" viewbox="0 0 680 130">
+<line opacity=".18" stroke="currentColor" x1="18" x2="662" y1="108" y2="108"></line>
+<polyline fill="none" points="18.0,83.0 19.7,83.1 22.3,83.1 24.4,83.1 32.2,83.0 33.3,82.9 35.3,82.7 36.3,82.4 37.7,82.0 38.8,81.5 39.9,80.9 40.7,80.4 42.2,79.7 43.5,79.2 45.0,78.7 46.8,78.1 48.1,77.8 49.3,77.3 50.0,77.1 51.4,76.8 52.2,76.6 53.4,76.4 54.0,76.3 54.7,76.1 55.2,76.0 55.9,75.9 56.5,75.8 57.4,75.6 58.3,75.4 58.9,75.1 59.9,74.8 60.9,74.5 62.1,74.2 63.0,73.9 63.7,73.6 64.5,73.4 65.2,73.1 65.7,72.9 66.7,72.6 67.3,72.4 68.1,72.1 69.1,71.3 69.9,70.4 73.1,69.4 79.5,68.5 84.3,67.4 86.2,66.3 87.7,64.9 89.3,64.1 92.7,63.0 94.4,61.8 98.3,59.9 101.1,58.1 106.1,56.4 112.6,54.1 118.3,52.3 121.3,49.9 123.6,48.0 125.8,46.2 130.7,44.7 139.4,43.0 143.8,41.7 150.1,40.1 152.6,39.0 155.3,37.6 158.3,36.3 162.7,35.0 168.6,33.1 175.3,31.5 182.5,29.7 188.3,28.1 195.1,26.0 201.5,24.6 208.3,23.2 212.0,22.4 212.5,21.6 212.9,21.0 214.9,20.4 216.9,20.3 218.4,20.2 219.7,20.1 220.0,20.1 222.3,20.0 223.4,20.0 224.7,20.1 225.8,20.2 226.8,20.2 227.5,20.2 228.4,20.3 229.1,20.5 230.9,20.8 231.5,21.2 232.0,21.6 232.7,22.3 234.5,22.9 235.0,23.6 235.7,24.0 236.6,24.5 237.6,24.8 238.4,25.2 240.2,25.5 240.8,25.9 242.3,26.2 243.0,26.6 243.9,27.0 244.7,27.5 246.7,27.9 248.0,28.1 249.8,28.0 255.4,27.8 261.2,27.3 265.4,27.1 270.0,26.8 273.0,26.7 280.7,26.9 284.9,27.4 288.2,28.3 292.7,29.7 296.2,30.6 300.6,31.7 304.0,32.7 308.0,34.0 310.1,35.2 315.2,36.8 320.5,37.8 327.0,38.6 334.7,38.7 344.9,38.3 352.1,37.8 359.3,36.8 363.7,35.2 365.0,33.9 368.3,32.3 372.6,31.3 376.8,30.0 379.6,28.9 388.9,27.7 397.1,27.0 406.1,26.4 410.8,26.3 422.4,26.4 430.4,26.9 438.0,27.6 444.5,29.1 450.3,30.9 458.0,33.3 465.7,35.3 474.0,37.9 476.4,40.1 480.1,42.6 482.5,44.1 483.8,45.5 484.8,46.5 486.8,47.7 488.7,48.8 490.1,50.0 494.4,51.5 498.8,52.7 501.1,54.2 502.9,55.4 505.2,56.8 506.9,57.9 508.4,59.4 511.6,60.8 514.8,62.5 518.0,63.8 521.2,65.4 523.3,66.6 525.2,67.7 527.6,68.8 528.7,69.5 530.7,70.4 532.0,71.2 533.4,72.3 535.4,73.2 537.8,74.3 539.1,75.4 540.7,76.8 541.6,78.0 544.4,79.2 545.4,80.2 547.1,81.1 548.3,82.2 549.0,82.8 550.4,83.4 551.8,83.8 553.2,84.4 554.3,84.9 555.6,85.7 556.9,86.6 560.8,87.8 564.1,89.1 567.5,90.8 571.2,92.3 576.9,93.9 584.3,95.9 587.6,97.5 596.1,99.3 600.6,100.7 605.2,102.2 609.3,103.3 610.7,104.5 613.9,105.2 616.4,105.9 617.9,106.4 624.3,106.9 625.0,107.1 628.4,107.2 631.7,107.2 633.7,107.3 636.4,107.3 637.3,107.2 640.4,107.2 641.5,107.2 642.4,107.3 642.8,107.5 643.9,107.6 651.5,107.7 658.2,107.8 662.0,108.0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+<text font-size="11" x="18" y="125">1013 m</text>
+<text font-size="11" x="618" y="125">809 m</text></svg>
+<p>Première journée d’entrée dans l’itinérance. Une étape courte qui traverse les hauteurs avant de redescendre dormir à Servoz.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>≈ heure</th><th>km</th><th>D+</th><th>POI</th></tr></thead>
+<tbody><tr><td>10:30</td><td>0.0</td><td>+0 m</td><td>Départ — Gaillants</td></tr><tr><td>12:45</td><td>~5.5</td><td>~+500 m</td><td>Pause pique-nique — secteur Coupeau / Le Bettey</td></tr><tr><td>14:45</td><td>11.0</td><td>+660 m</td><td>Arrivée — Servoz</td></tr></tbody>
+</table></div>
+</div></details>
+</div>
+<div class="tips"><h4>À garder en tête</h4><ul><li>Départ volontairement plus tardif pour finir tranquillement les sacs le matin.</li><li>Pause pique-nique logique sur le balcon de Coupeau / secteur du Bettey ; si le départ glisse encore, déjeuner simplement à l’arrivée à Servoz.</li><li>Nuit à Servoz : rien à porter pour le dîner et possibilité de refaire complètement le ravitaillement.</li></ul></div>
+</div>
+</details>
+<details class="day">
+<summary><span class="daynum">J2</span><span><strong>Servoz → Chalets de Villy</strong><small>La grosse montée du versant Passy : montée progressive vers Moëde-Anterne puis poursuite jusqu’au bivouac sauvage de Villy.</small></span><span class="chev">⌄</span></summary>
+<div class="daybody">
+<figure class="hero"><div class="photo-placeholder-exact">Photo J2 à ajouter</div><figcaption>Photo J2 à ajouter</figcaption></figure>
+<div class="variants">
+<details class="variant long" open=""><summary><span>Étape</span><small>13.8 km · +1310 m</small></summary><div class="variantbody">
+<div class="stats">
+<div><b>13.8 km</b><span>distance</span></div>
+<div><b>+1310 m</b><span>D+</span></div>
+<div><b>−220 m</b><span>D−</span></div>
+<div><b>~5 h 30</b><span>marche + pauses courtes</span></div>
+</div>
+<svg aria-label="Profil altimétrique" class="profile" role="img" viewbox="0 0 680 130">
+<line opacity=".18" stroke="currentColor" x1="18" x2="662" y1="108" y2="108"></line>
+<polyline fill="none" points="18.0,108.0 24.5,108.0 33.3,108.0 39.7,107.7 50.7,107.1 58.0,106.3 63.3,105.4 73.2,104.7 80.8,104.4 87.7,104.0 92.4,103.4 98.2,102.0 107.6,100.1 112.8,98.2 119.1,96.0 125.9,94.1 131.7,91.3 143.1,89.2 149.9,87.1 157.0,85.0 166.0,82.8 174.6,79.3 183.7,76.2 192.9,73.7 200.0,71.8 209.3,71.1 214.8,70.2 219.0,69.3 221.5,68.7 224.4,67.9 227.1,67.4 230.3,66.7 232.6,66.0 235.0,65.4 237.9,64.8 242.6,64.5 246.5,64.4 250.2,64.5 253.5,64.5 256.4,64.7 259.3,64.7 262.5,64.5 266.1,64.2 268.6,63.7 271.1,63.1 275.5,62.3 279.9,61.3 285.6,60.5 289.6,59.6 292.4,58.9 294.8,58.4 299.0,57.9 302.7,57.5 304.9,57.1 306.4,56.6 307.7,56.2 308.6,55.8 309.5,55.3 312.7,54.8 314.8,54.3 317.8,53.9 320.4,53.7 321.2,53.7 323.1,53.8 324.6,53.9 325.8,54.0 328.1,54.1 329.1,54.2 330.7,54.2 332.3,53.9 333.3,53.5 335.1,52.6 336.4,51.8 338.2,50.8 340.0,50.0 341.4,49.3 342.6,48.4 343.9,47.6 346.8,46.8 350.0,45.9 353.6,44.8 357.1,43.5 360.4,42.1 364.8,40.7 366.7,39.8 369.1,38.9 370.4,38.2 372.8,37.4 377.1,36.5 379.7,36.0 382.5,35.5 385.2,35.4 387.0,35.3 390.2,35.0 392.0,34.5 393.3,33.8 394.8,33.2 395.7,32.5 397.7,31.6 400.0,30.8 401.9,29.9 403.8,29.3 405.8,28.7 407.5,28.2 411.0,27.6 419.2,26.8 423.7,26.2 428.5,25.8 433.3,25.9 438.5,26.1 441.8,26.3 443.5,26.2 446.0,25.9 449.2,25.5 453.6,25.1 460.7,24.6 463.4,24.2 465.8,23.7 468.1,23.4 469.8,23.3 471.7,23.4 474.1,23.6 475.3,23.8 476.2,23.9 477.8,24.0 480.4,24.0 481.7,24.1 484.0,24.1 485.2,24.0 486.6,23.8 488.0,23.4 489.4,23.0 492.2,22.6 493.3,22.3 494.9,22.2 496.6,22.1 497.2,22.2 499.2,22.2 499.9,22.2 500.8,22.1 502.9,22.0 503.8,21.8 504.9,21.7 507.1,21.6 509.4,21.6 510.6,21.5 512.1,21.5 513.0,21.5 515.8,21.4 518.9,21.3 521.5,21.0 523.8,20.8 527.9,20.5 531.4,20.4 533.5,20.4 536.8,20.2 539.5,20.1 542.0,20.0 546.0,20.2 548.1,20.6 549.3,21.1 550.2,21.4 551.9,21.8 553.5,22.4 556.0,23.4 561.9,24.3 565.0,25.1 566.0,25.6 567.9,26.0 570.9,26.3 572.1,26.7 574.1,27.1 575.7,27.6 580.3,28.0 581.8,28.5 583.0,28.8 584.4,29.1 585.8,29.3 586.9,29.6 588.9,29.8 589.8,30.0 591.4,30.1 592.4,30.1 593.7,30.1 595.1,30.1 596.3,30.3 597.4,30.4 598.3,30.6 600.6,30.7 602.8,30.8 603.9,30.8 605.6,30.9 606.9,30.9 609.4,30.9 611.5,31.0 613.1,31.1 615.7,31.2 618.1,31.3 619.6,31.3 621.5,31.3 622.9,31.4 624.7,31.5 628.6,31.6 630.8,31.7 633.2,31.7 635.4,31.7 636.4,31.7 638.5,31.5 640.6,31.4 641.7,31.3 643.0,31.2 644.8,31.2 646.0,31.2 648.0,31.1 650.1,31.2 652.1,31.3 655.5,31.3 657.5,31.4 659.0,31.4 662.0,31.3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+<text font-size="11" x="18" y="125">799 m</text>
+<text font-size="11" x="618" y="125">1884 m</text></svg>
+<p>La grosse montée du versant Passy : montée progressive vers Moëde-Anterne puis poursuite jusqu’au bivouac sauvage de Villy.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>≈ heure</th><th>km</th><th>D+</th><th>POI</th></tr></thead>
+<tbody><tr><td>09:00</td><td>0.0</td><td>+0 m</td><td>Départ — Servoz</td></tr><tr><td>13:30</td><td>9.6</td><td>~+1 050 m</td><td>Pause déjeuner — Refuge de Moëde-Anterne</td></tr><tr><td>16:00</td><td>13.8</td><td>+1 310 m</td><td>Bivouac — Chalets de Villy</td></tr></tbody>
+</table></div>
+</div></details>
+</div>
+<div class="tips"><h4>À garder en tête</h4><ul><li>Fontaine signalée aux Chalets de Villy ; garder le filtre à eau comme solution de secours.</li><li>Moëde-Anterne permet de déjeuner, remplir l’eau et faire un dernier point météo avant le bivouac.</li></ul></div>
+</div>
+</details>
+<details class="day">
+<summary><span class="daynum">J3</span><span><strong>Chalets de Villy → La Joux</strong><small>Étape sauvage et très descendante : Villy, vallon de Bérard, puis retour progressif vers la vallée jusqu’à La Joux.</small></span><span class="chev">⌄</span></summary>
+<div class="daybody">
+<figure class="hero"><div class="photo-placeholder-exact">Photo J3 à ajouter</div><figcaption>Photo J3 à ajouter</figcaption></figure>
+<div class="variants">
+<details class="variant long" open=""><summary><span>Étape</span><small>17.9 km · +765 m</small></summary><div class="variantbody">
+<div class="stats">
+<div><b>17.9 km</b><span>distance</span></div>
+<div><b>+765 m</b><span>D+</span></div>
+<div><b>−1450 m</b><span>D−</span></div>
+<div><b>~6 h</b><span>marche + pauses courtes</span></div>
+</div>
+<svg aria-label="Profil altimétrique" class="profile" role="img" viewbox="0 0 680 130">
+<line opacity=".18" stroke="currentColor" x1="18" x2="662" y1="108" y2="108"></line>
+<polyline fill="none" points="18.0,62.1 20.1,61.9 22.6,61.5 24.9,61.0 26.2,60.6 28.0,60.3 29.1,60.0 30.7,59.6 31.9,59.1 33.2,58.7 35.0,58.4 36.3,58.1 38.3,57.7 40.7,57.4 41.7,57.4 43.0,57.5 44.4,57.8 46.7,57.9 48.3,57.8 50.1,57.3 52.0,56.7 53.7,56.2 55.2,55.6 56.1,55.0 58.7,54.4 60.0,53.8 64.3,53.5 65.8,53.2 67.6,52.9 68.5,52.5 69.5,51.8 73.1,50.9 74.3,49.9 75.6,49.0 79.1,48.1 82.3,47.1 85.3,46.2 88.9,45.5 90.0,44.6 91.4,43.8 94.2,42.8 96.0,42.0 97.2,41.5 97.9,41.0 98.9,40.5 100.1,39.8 101.5,39.1 102.5,38.5 103.4,38.1 104.2,37.4 106.9,36.3 109.0,35.3 111.0,34.4 112.9,33.4 115.5,32.3 117.2,31.6 118.8,31.1 120.8,30.2 124.7,29.1 127.7,28.0 128.3,26.8 132.4,24.5 137.4,22.1 138.9,20.4 140.9,20.0 142.5,20.1 145.2,20.5 147.4,21.3 149.4,23.0 154.0,25.7 160.8,30.2 169.1,34.4 172.6,37.3 174.1,38.9 176.1,40.3 180.0,42.7 185.0,45.5 189.1,48.5 192.6,51.0 196.3,52.8 199.0,54.0 200.0,54.7 200.9,55.5 202.1,56.4 203.6,57.5 206.0,58.4 207.6,59.0 208.7,59.5 210.2,59.9 211.3,60.3 212.2,60.5 213.1,60.9 214.7,61.2 215.9,61.6 217.9,62.1 219.5,62.6 220.9,63.2 222.0,63.7 223.7,64.3 224.9,64.9 226.0,65.4 227.3,66.0 229.1,66.6 232.4,66.9 234.3,66.8 236.1,66.8 237.6,67.0 240.4,67.6 246.6,68.8 251.2,70.1 260.1,71.2 264.8,71.9 271.2,72.7 273.2,73.5 280.7,74.0 283.9,74.4 286.5,75.2 292.7,76.2 298.1,77.0 304.3,77.3 306.4,77.5 310.5,78.5 316.1,79.9 320.5,82.2 331.8,84.4 335.5,85.9 336.9,86.7 342.5,87.2 346.0,87.9 350.3,88.3 354.2,89.0 358.5,89.4 361.8,90.1 366.3,90.9 370.0,92.0 372.6,92.8 374.3,93.1 376.7,93.3 379.1,93.4 382.2,93.6 384.6,94.1 388.5,94.8 398.5,95.5 408.8,95.3 417.8,94.4 425.6,93.3 434.7,92.8 439.9,92.2 444.9,91.5 450.1,91.0 453.5,90.9 456.4,91.0 460.6,91.2 463.1,91.6 469.6,92.0 473.6,92.5 477.5,92.9 481.4,93.2 483.1,93.6 488.8,94.4 494.6,95.1 497.7,95.6 501.1,96.0 504.8,96.7 507.3,97.7 511.3,98.6 513.2,99.7 514.5,100.3 516.3,100.8 517.4,101.3 521.0,101.7 523.2,102.0 525.6,102.3 530.9,102.8 535.3,103.4 540.2,103.9 543.7,104.2 546.9,104.5 552.1,104.8 557.4,105.2 565.8,105.4 570.6,105.5 576.1,105.5 579.0,105.5 580.8,105.5 582.6,105.4 583.8,105.3 585.6,105.2 587.2,105.3 588.7,105.5 591.3,105.6 593.5,105.5 595.4,105.5 597.7,105.6 599.9,105.7 602.9,105.4 605.0,104.9 606.7,104.5 609.2,104.1 611.6,104.0 613.7,103.8 615.8,103.5 618.1,103.3 620.5,103.2 622.9,103.4 625.4,103.7 627.6,104.1 630.5,104.4 633.5,104.8 635.9,105.1 638.2,105.4 640.5,105.5 643.6,105.7 646.3,106.0 648.0,106.3 649.3,106.8 651.3,107.3 653.2,107.7 657.3,107.9 662.0,108.0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+<text font-size="11" x="18" y="125">1886 m</text>
+<text font-size="11" x="618" y="125">1205 m</text></svg>
+<p>Étape sauvage et très descendante : Villy, vallon de Bérard, puis retour progressif vers la vallée jusqu’à La Joux.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>≈ heure</th><th>km</th><th>D+</th><th>POI</th></tr></thead>
+<tbody><tr><td>09:00</td><td>0.0</td><td>+0 m</td><td>Départ — Chalets de Villy</td></tr><tr><td>11:40</td><td>5.3</td><td>~+430 m</td><td>Refuge de la Pierre à Bérard</td></tr><tr><td>~13:45</td><td>~9.8</td><td>~+600 m</td><td>Échappatoire — Gare du Buet (:14 / :44)</td></tr><tr><td>16:45</td><td>17.9</td><td>+765 m</td><td>Arrivée — La Joux</td></tr></tbody>
+</table></div>
+</div></details>
+</div>
+<div class="tips"><h4>À garder en tête</h4><ul><li>Briefing à 18 h : objectif d’être rentrée à La Joux avec une bonne marge.</li><li>En cas de retard, gare du Buet → direction La Joux / Saint-Gervais : départs à :14 et :44 de chaque heure l’après-midi.</li></ul></div>
+</div>
+</details>
+<details class="day">
+<summary><span class="daynum">J4</span><span><strong>La Joux → Lac Bleu</strong><small>Deuxième grosse montée : remontée vers Montenvers, traversée vers le Plan de l’Aiguille puis bivouac au Lac Bleu face au massif du Mont-Blanc.</small></span><span class="chev">⌄</span></summary>
+<div class="daybody">
+<figure class="hero"><div class="photo-placeholder-exact">Photo J4 à ajouter</div><figcaption>Photo J4 à ajouter</figcaption></figure>
+<div class="variants">
+<details class="variant long" open=""><summary><span>Étape</span><small>14.5 km · +1335 m</small></summary><div class="variantbody">
+<div class="stats">
+<div><b>14.5 km</b><span>distance</span></div>
+<div><b>+1335 m</b><span>D+</span></div>
+<div><b>−230 m</b><span>D−</span></div>
+<div><b>~5 h 45</b><span>marche + pauses courtes</span></div>
+</div>
+<svg aria-label="Profil altimétrique" class="profile" role="img" viewbox="0 0 680 130">
+<line opacity=".18" stroke="currentColor" x1="18" x2="662" y1="108" y2="108"></line>
+<polyline fill="none" points="18.0,100.6 19.0,100.9 20.8,101.2 23.0,101.6 25.0,102.1 28.9,102.4 32.2,102.7 34.9,102.8 38.1,102.9 40.9,103.0 42.9,103.1 45.6,103.3 49.8,103.6 52.4,103.8 54.8,104.0 57.0,104.2 58.5,104.2 61.8,103.7 66.3,102.8 71.9,101.8 78.3,100.9 80.0,100.2 82.9,99.8 84.2,99.5 86.8,99.1 89.1,98.8 90.7,98.4 94.8,98.1 96.9,98.0 99.6,98.0 103.3,98.1 106.4,98.1 111.2,98.0 114.6,97.9 118.3,98.0 120.4,98.3 122.3,99.0 124.7,99.7 127.2,100.4 130.0,100.9 132.2,101.3 134.6,101.8 136.7,102.3 140.1,102.8 144.7,103.2 150.7,103.8 153.4,104.5 155.7,105.1 157.1,105.6 158.4,106.0 161.5,106.5 163.5,106.9 167.8,107.5 171.5,107.8 177.4,108.0 182.3,108.0 185.9,107.9 188.5,107.8 193.1,107.4 196.1,106.8 198.4,106.1 201.5,105.1 205.2,104.0 207.8,103.0 210.9,101.7 213.4,100.7 216.9,99.7 219.8,98.9 222.8,98.0 224.9,97.0 228.4,95.8 232.0,94.6 234.9,93.6 236.9,92.5 240.7,91.5 244.0,90.4 246.7,89.4 249.0,88.6 250.7,87.8 253.1,86.8 255.7,85.7 259.2,84.6 263.8,83.5 267.2,82.3 272.0,81.4 274.5,80.7 278.3,80.2 281.3,80.1 284.5,79.9 286.3,79.5 288.7,79.2 291.3,78.7 293.7,78.1 296.5,77.7 299.5,77.2 301.3,76.8 303.5,76.6 304.9,76.0 306.8,75.3 310.7,74.3 313.8,73.0 320.0,71.9 321.1,71.2 321.7,70.6 322.6,70.3 323.7,69.9 325.6,69.3 329.4,68.5 331.9,67.4 335.3,66.3 336.7,65.0 338.6,63.7 340.2,61.8 345.5,59.7 350.4,57.2 357.8,55.0 364.2,53.1 367.5,51.6 370.1,50.5 373.4,49.5 376.8,48.8 379.4,48.6 381.1,48.4 382.3,48.1 383.6,47.8 385.1,47.3 386.5,46.9 388.1,46.5 389.9,46.1 391.2,45.8 392.6,45.3 394.5,44.5 400.6,43.7 406.1,42.6 413.7,41.8 417.9,41.2 420.9,40.6 425.5,40.2 429.3,39.8 434.8,39.4 439.5,38.9 445.4,38.2 453.0,37.6 457.8,36.8 462.0,36.3 469.8,35.8 475.9,35.3 482.1,35.0 487.1,34.7 493.2,34.5 498.8,34.4 503.8,34.4 508.7,34.4 510.2,34.3 512.3,34.0 514.4,33.6 516.2,33.3 517.7,33.0 519.1,32.8 520.3,32.4 522.0,32.1 525.6,32.1 532.5,32.1 537.5,32.2 538.6,32.3 539.8,32.0 542.6,31.7 544.6,31.4 546.3,31.1 548.7,30.7 555.1,30.6 560.2,30.7 568.2,30.8 570.8,30.8 574.1,30.4 577.6,29.7 580.7,29.0 585.7,28.5 589.4,28.2 593.2,28.1 598.3,27.9 601.7,27.7 602.6,27.5 603.5,27.2 604.3,27.0 605.9,26.7 607.4,26.2 608.9,25.8 610.0,25.5 611.1,25.2 612.5,25.0 614.2,24.7 615.2,24.2 617.8,23.7 618.9,23.2 620.0,22.9 621.7,22.7 624.7,22.3 626.3,22.0 628.4,21.6 629.9,21.2 632.2,20.9 633.2,20.6 635.3,20.6 637.6,20.6 639.1,20.6 640.7,20.6 642.0,20.7 643.1,20.8 644.0,20.9 646.6,21.1 648.3,21.2 650.5,21.3 652.0,21.2 653.3,20.9 654.8,20.7 655.6,20.3 656.6,20.2 658.7,20.1 662.0,20.0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+<text font-size="11" x="18" y="125">1198 m</text>
+<text font-size="11" x="618" y="125">2307 m</text></svg>
+<p>Deuxième grosse montée : remontée vers Montenvers, traversée vers le Plan de l’Aiguille puis bivouac au Lac Bleu face au massif du Mont-Blanc.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>≈ heure</th><th>km</th><th>D+</th><th>POI</th></tr></thead>
+<tbody><tr><td>09:00</td><td>0.0</td><td>+0 m</td><td>Départ — La Joux</td></tr><tr><td>12:45</td><td>7.9</td><td>~+800 m</td><td>Montenvers</td></tr><tr><td>15:30</td><td>13.2</td><td>~+1 250 m</td><td>Refuge du Plan de l’Aiguille</td></tr><tr><td>≤18:00</td><td>~13.2</td><td>~+1 250 m</td><td>Échappatoire — Téléphérique du Plan de l’Aiguille</td></tr><tr><td>16:10</td><td>14.5</td><td>+1 335 m</td><td>Bivouac — Lac Bleu</td></tr></tbody>
+</table></div>
+</div></details>
+</div>
+<div class="tips"><h4>À garder en tête</h4><ul><li>En cas de mauvais temps ou besoin de rentrer : descente possible par le téléphérique du Plan de l’Aiguille jusqu’à 18 h.</li><li>Eau potable disponible au refuge et au téléphérique ; faire le plein pour le dîner, la nuit et le petit-déjeuner.</li></ul></div>
+</div>
+</details>
+<details class="day">
+<summary><span class="daynum">J5</span><span><strong>Lac Bleu → Gaillants</strong><small>Dernière journée presque entièrement descendante : on quitte le bivouac du Lac Bleu et on boucle tranquillement le tour aux Gaillants.</small></span><span class="chev">⌄</span></summary>
+<div class="daybody">
+<figure class="hero"><div class="photo-placeholder-exact">Photo J5 à ajouter</div><figcaption>Photo J5 à ajouter</figcaption></figure>
+<div class="variants">
+<details class="variant long" open=""><summary><span>Étape</span><small>8.5 km · +20 m</small></summary><div class="variantbody">
+<div class="stats">
+<div><b>8.5 km</b><span>distance</span></div>
+<div><b>+20 m</b><span>D+</span></div>
+<div><b>−1300 m</b><span>D−</span></div>
+<div><b>~3 h 15</b><span>marche + pauses courtes</span></div>
+</div>
+<svg aria-label="Profil altimétrique" class="profile" role="img" viewbox="0 0 680 130">
+<line opacity=".18" stroke="currentColor" x1="18" x2="662" y1="108" y2="108"></line>
+<polyline fill="none" points="18.0,20.4 20.5,20.3 21.6,20.2 24.1,20.1 27.5,20.1 30.4,20.0 32.3,20.0 33.9,20.0 35.1,20.1 35.9,20.3 36.5,20.5 38.2,20.7 39.7,20.8 40.6,20.9 42.5,21.0 44.1,21.0 46.3,21.0 48.7,20.9 49.6,20.9 53.0,20.8 55.0,20.7 55.6,20.6 56.8,20.6 58.1,20.5 59.4,20.5 60.4,20.5 62.6,20.4 63.7,20.4 65.3,20.4 66.6,20.4 69.6,20.4 71.7,20.4 73.4,20.5 74.3,20.6 75.8,20.7 78.7,20.9 80.7,21.1 82.0,21.4 84.3,21.6 86.0,21.8 87.5,22.0 89.7,22.2 93.4,22.4 94.8,22.5 96.2,22.7 97.7,22.9 98.5,23.1 99.9,23.4 102.0,23.6 104.1,23.9 105.4,24.2 106.6,24.4 108.5,24.5 110.1,24.7 111.2,24.8 112.4,25.0 113.7,25.1 114.7,25.3 116.4,25.5 117.4,25.8 119.3,26.0 120.2,26.3 122.2,26.4 123.3,26.6 124.1,26.7 124.8,26.9 126.0,27.1 126.9,27.4 128.6,27.8 131.9,28.4 133.0,29.1 137.1,30.1 143.4,31.0 146.8,31.8 152.5,32.8 155.4,33.6 156.9,34.2 158.0,34.7 159.7,35.1 160.3,35.3 161.1,35.6 161.6,35.7 162.3,36.0 163.6,36.2 164.6,36.5 167.5,36.9 169.9,37.4 172.8,37.9 176.3,38.5 181.0,38.9 183.2,39.5 185.5,40.0 187.9,40.4 190.1,40.9 192.6,41.5 196.4,41.9 202.6,42.4 207.0,42.9 208.6,43.3 211.3,43.8 212.8,44.2 214.9,44.6 216.9,45.0 220.5,45.4 223.6,45.9 225.7,46.4 229.0,46.7 230.5,47.1 231.6,47.7 232.7,48.1 234.4,48.5 237.2,48.9 240.5,49.4 242.5,49.9 243.8,50.3 245.3,50.6 248.5,51.2 251.5,51.7 254.0,52.5 259.5,53.3 266.5,53.9 270.7,54.8 274.5,55.5 278.0,56.3 283.5,56.9 285.1,57.3 286.6,57.7 287.7,58.1 289.3,58.5 290.9,59.1 296.0,59.7 297.5,60.4 303.0,61.1 304.3,61.6 306.0,62.2 307.5,62.8 311.5,63.0 314.3,63.5 316.3,63.9 318.0,64.2 322.4,64.7 325.5,65.0 328.5,65.5 333.6,66.0 335.8,66.4 340.3,66.8 344.0,67.3 348.1,67.8 354.0,68.5 358.7,69.5 362.6,70.4 372.8,71.8 376.3,72.9 384.6,74.5 391.8,76.3 400.3,77.6 408.4,79.3 418.3,80.9 425.4,82.0 430.5,83.2 434.9,84.2 436.5,84.8 438.8,85.4 441.0,85.8 445.6,86.3 451.9,86.9 455.1,87.3 458.6,87.8 463.3,88.4 466.2,88.8 467.9,89.3 471.8,89.8 473.1,90.2 476.3,90.7 478.0,91.1 481.8,91.6 483.6,92.2 486.8,92.8 490.8,93.5 494.7,94.4 499.2,95.1 505.4,96.1 511.0,96.9 514.7,97.5 518.7,98.2 521.4,98.7 523.9,99.3 526.9,99.8 530.7,100.3 533.4,100.9 538.3,101.7 541.5,102.2 546.2,102.8 551.4,103.2 556.5,103.6 559.9,103.8 565.3,103.9 568.0,104.1 578.5,104.2 586.7,104.2 592.3,104.3 597.6,104.4 598.7,104.5 601.8,104.6 604.9,104.7 615.4,104.9 620.3,105.1 621.9,105.3 624.5,105.4 625.6,105.7 626.7,105.9 629.8,106.2 638.4,106.5 641.4,106.7 645.6,107.1 648.9,107.4 651.5,107.6 654.9,107.7 659.1,107.9 662.0,108.0" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+<text font-size="11" x="18" y="125">2298 m</text>
+<text font-size="11" x="618" y="125">1019 m</text></svg>
+<p>Dernière journée presque entièrement descendante : on quitte le bivouac du Lac Bleu et on boucle tranquillement le tour aux Gaillants.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>≈ heure</th><th>km</th><th>D+</th><th>POI</th></tr></thead>
+<tbody><tr><td>09:00</td><td>0.0</td><td>+0 m</td><td>Départ — Lac Bleu</td></tr><tr><td>~09:15</td><td>~0.6</td><td>+20 m</td><td>Refuge du Plan de l’Aiguille — eau</td></tr><tr><td>12:15</td><td>8.5</td><td>+20 m</td><td>Arrivée — Gaillants</td></tr><tr><td>:01</td><td>—</td><td>—</td><td>Retour — Gare des Pélerins → Servoz</td></tr></tbody>
+</table></div>
+</div></details>
+</div>
+<div class="tips"><h4>À garder en tête</h4><ul><li>Faire le plein d’eau au Plan de l’Aiguille avant la descente.</li><li>Depuis les Gaillants, rejoindre la gare des Pélerins. En direction de Servoz / Saint-Gervais : départ à :01 de chaque heure l’après-midi.</li></ul></div>
+</div>
+</details>
+<details class="major-section food-major"><summary><span class="major-icon">🍴</span><span><strong>Nourriture</strong><small>Choix des repas, quantités calculées et ravitaillements</small></span><span class="chev">⌄</span></summary><div class="major-body"><p class="logistics-lead">Choisis les options de repas ci-dessous : les quantités à porter depuis Servoz puis depuis La Joux s’adaptent aux choix de refuge / pique-nique.</p><div class="legend"><span class="legend-pill carry">À prévoir / porter</span><span class="legend-pill onsite">Sur place</span><span class="legend-pill none">Rien à prévoir</span></div><h3>Choix des repas</h3><p class="section-help">Les choix verts / jaunes sont des alternatives. Sélectionne l’option prévue : elle se met en évidence et met à jour les quantités.</p><div class="meal-choice-grid"><div class="meal-choice-card"><h4>J1</h4><div class="fixed-meal none"><b>Petit-déjeuner</b><span>Début du trek — rien à prévoir</span></div><div class="fixed-meal carry"><b>Midi</b><span>Pique-nique à prévoir</span></div><div class="fixed-meal none"><b>Soir</b><span>Servoz — rien à prévoir / ravitaillement</span></div></div><div class="meal-choice-card"><h4>J2</h4><div class="fixed-meal none"><b>Petit-déjeuner</b><span>Servoz — rien à porter depuis J1</span></div><div class="meal-label">Midi</div><div class="choice-row"><div class="choice-option onsite"><input checked="" id="tar-choice-201" name="tar-j2-lunch" type="radio" value="refuge"/><label for="tar-choice-201"><span class="choice-mark"></span><span class="choice-text">Moëde-Anterne</span></label></div><div class="choice-option carry"><input id="tar-choice-202" name="tar-j2-lunch" type="radio" value="carry"/><label for="tar-choice-202"><span class="choice-mark"></span><span class="choice-text">Pique-nique à prévoir</span></label></div></div><div class="fixed-meal carry"><b>Soir</b><span>Bivouac Villy — à prévoir</span></div></div><div class="meal-choice-card"><h4>J3</h4><div class="fixed-meal carry"><b>Petit-déjeuner</b><span>À prévoir</span></div><div class="meal-label">Midi</div><div class="choice-row"><div class="choice-option onsite"><input checked="" id="tar-choice-203" name="tar-j3-lunch" type="radio" value="refuge"/><label for="tar-choice-203"><span class="choice-mark"></span><span class="choice-text">Pierre à Bérard</span></label></div><div class="choice-option carry"><input id="tar-choice-204" name="tar-j3-lunch" type="radio" value="carry"/><label for="tar-choice-204"><span class="choice-mark"></span><span class="choice-text">Pique-nique à prévoir</span></label></div></div><div class="fixed-meal none"><b>Soir</b><span>La Joux — rien à prévoir / ravitaillement</span></div></div><div class="meal-choice-card"><h4>J4</h4><div class="fixed-meal none"><b>Petit-déjeuner</b><span>La Joux — rien à porter depuis J3</span></div><div class="meal-label">Midi</div><div class="choice-row"><div class="choice-option carry"><input checked="" id="tar-choice-205" name="tar-j4-lunch" type="radio" value="carry"/><label for="tar-choice-205"><span class="choice-mark"></span><span class="choice-text">Pique-nique à prévoir</span></label></div><div class="choice-option onsite"><input id="tar-choice-206" name="tar-j4-lunch" type="radio" value="montenvers"/><label for="tar-choice-206"><span class="choice-mark"></span><span class="choice-text">Montenvers — repas sur place</span></label></div></div><div class="fixed-meal carry"><b>Soir</b><span>Bivouac Lac Bleu — à prévoir</span></div></div><div class="meal-choice-card"><h4>J5</h4><div class="fixed-meal carry"><b>Petit-déjeuner</b><span>À prévoir</span></div><div class="fixed-meal none"><b>Midi</b><span>Arrivée tôt — rien à prévoir par défaut</span></div><div class="fixed-meal none"><b>Soir</b><span>Fin du trek — rien à prévoir</span></div></div></div><h3>Quantités calculées</h3><div class="calc-grid"><div class="calc-card" id="tar-calc-gaillants"><h4>À prendre au départ des Gaillants</h4><div class="calc-content"><div class="tar-calc-case" data-case="refuge-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div><div class="tar-calc-case" data-case="refuge-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div><div class="tar-calc-case" data-case="refuge-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div><div class="tar-calc-case" data-case="refuge-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div><div class="tar-calc-case" data-case="carry-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div><div class="tar-calc-case" data-case="carry-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div><div class="tar-calc-case" data-case="carry-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div><div class="tar-calc-case" data-case="carry-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>0</b><small>départ après petit-déjeuner</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J1</small></div><div class="calc-line"><span>Dîners</span><b>0</b><small>soir à Servoz</small></div><div class="calc-line"><span>Snacks</span><b>J1</b></div><div class="calc-line"><span>Réserve</span><b>0</b><small>ravitaillement à Servoz le soir</small></div></div></div></div><div class="calc-card" id="tar-calc-servoz"><h4>À prendre au départ de Servoz</h4><div class="calc-content"><div class="tar-calc-case" data-case="refuge-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>0</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="refuge-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>0</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="refuge-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="refuge-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>2</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J3</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>2</b><small>J2 / J3 selon les choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J2 soir à Villy</small></div><div class="calc-line"><span>Snacks</span><b>J2 + J3</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div></div></div><div class="calc-card" id="tar-calc-lajoux"><h4>À prendre au départ de La Joux</h4><div class="calc-content"><div class="tar-calc-case" data-case="refuge-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="refuge-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>0</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="refuge-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="refuge-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>0</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>0</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>1</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div><div class="tar-calc-case" data-case="carry-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>1</b><small>J5</small></div><div class="calc-line"><span>Déjeuners / pique-niques</span><b>0</b><small>J4 selon le choix</small></div><div class="calc-line"><span>Dîners</span><b>1</b><small>J4 soir au Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>J4 + J5</b></div><div class="calc-line"><span>Réserve</span><b>1</b><small>petite ration de sécurité</small></div></div></div></div><div class="calc-card" id="tar-calc-total"><h4>Total de repas autonomes</h4><div class="calc-content"><div class="tar-calc-case" data-case="refuge-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>2</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div><div class="tar-calc-case" data-case="refuge-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>1</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div><div class="tar-calc-case" data-case="refuge-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>3</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div><div class="tar-calc-case" data-case="refuge-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>2</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div><div class="tar-calc-case" data-case="carry-refuge-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>3</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div><div class="tar-calc-case" data-case="carry-refuge-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>2</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div><div class="tar-calc-case" data-case="carry-carry-carry"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>4</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div><div class="tar-calc-case" data-case="carry-carry-montenvers"><div class="calc-line"><span>Petits-déjeuners</span><b>2</b><small>J3 + J5</small></div><div class="calc-line"><span>Déjeuners autonomes</span><b>3</b><small>inclut J1</small></div><div class="calc-line"><span>Dîners autonomes</span><b>2</b><small>Villy + Lac Bleu</small></div><div class="calc-line"><span>Snacks</span><b>5 jours</b></div><div class="calc-line"><span>Ravitaillements</span><b>2</b><small>Servoz + La Joux</small></div></div></div></div></div><div class="dynamic-note" id="route-note">Le portage est fractionné naturellement : ravitaillement complet possible à Servoz puis à La Joux.</div><h3>Options utiles sur place</h3><div class="logistics-box"><ul><li>J1 — Servoz : repas et ravitaillement complet.</li><li>J2 — Moëde-Anterne : déjeuner + eau potable.</li><li>J3 — Pierre à Bérard : déjeuner + eau potable.</li><li>J3 — La Joux : repas et ravitaillement complet.</li><li>J4 — Montenvers : restauration possible.</li><li>J4/J5 — Plan de l’Aiguille : restauration + eau potable.</li></ul></div></div></details><details class="major-section water-major"><summary><span class="major-icon">💧</span><span><strong>Eau</strong><small>Points d’hydratation par kilomètre</small></span><span class="chev">⌄</span></summary><div class="major-body"><h3>Points d’hydratation par kilomètre</h3><p class="logistics-lead">Capacité conseillée : 3 L par personne. Inutile de porter 3 L en permanence : adapte le remplissage selon la distance jusqu’au prochain point d’eau et les besoins du bivouac.</p><div class="water-grid-v2"><div class="water-card-v2"><h4>J1</h4><div class="water-line"><b>km 0,0</b><span>Gaillants — eau au départ</span></div><div class="water-line"><b>km ~9,1</b><span>Montvauthier — point d’eau à ~140 m de la trace</span></div><div class="water-line"><b>km 11,0</b><span>Servoz — eau à l’arrivée</span></div><p class="water-note">Étape courte : capacité complète inutile sauf forte chaleur. Merlet n’est pas retenu comme ravitaillement : l’eau du parc est officiellement indiquée non potable.</p></div><div class="water-card-v2"><h4>J2</h4><div class="water-line"><b>km 0,0</b><span>Servoz — eau au départ</span></div><div class="water-line"><b>km ~3,8</b><span>Secteur Lac Vert — point d’eau à ~210 m de la trace</span></div><div class="water-line"><b>km ~4,8</b><span>Secteur Ayères — eau</span></div><div class="water-line"><b>km ~5,8</b><span>Ayères — eau</span></div><div class="water-line"><b>km ~9,6</b><span>Refuge de Moëde-Anterne — eau potable</span></div><div class="water-line"><b>km 13,8</b><span>Chalets de Villy — fontaine signalée</span></div><p class="water-note">Pour le bivouac, faire le plein à Moëde-Anterne si besoin ; filtre en sécurité à Villy.</p></div><div class="water-card-v2"><h4>J3</h4><div class="water-line"><b>km 0,0</b><span>Chalets de Villy — fontaine signalée</span></div><div class="water-line"><b>km ~5,3</b><span>Refuge de la Pierre à Bérard — eau potable</span></div><div class="water-line"><b>km ~9,1</b><span>Fontaine Froide — eau</span></div><div class="water-line"><b>km ~12,1</b><span>Secteur Vallorcine / Le Couteray — eau</span></div><div class="water-line"><b>km 17,9</b><span>La Joux — eau à l’arrivée</span></div><p class="water-note">Points réguliers sur la seconde moitié de l’étape.</p></div><div class="water-card-v2"><h4>J4</h4><div class="water-line"><b>km 0,0</b><span>La Joux — eau au départ</span></div><div class="water-line"><b>km ~7,9</b><span>Montenvers — eau / infrastructures</span></div><div class="water-line"><b>km ~13,2</b><span>Plan de l’Aiguille — eau potable au refuge et au téléphérique</span></div><div class="water-line"><b>km 14,5</b><span>Lac Bleu — bivouac ; filtre en sécurité</span></div><p class="water-note">Faire le plein au Plan de l’Aiguille pour le dîner, la nuit et le petit-déjeuner.</p></div><div class="water-card-v2"><h4>J5</h4><div class="water-line"><b>km 0,0</b><span>Plan de l’Aiguille — eau potable avant la descente</span></div><div class="water-line"><b>km 8,5</b><span>Gaillants — eau à l’arrivée</span></div><p class="water-note">Une fois le plein fait en haut, la journée est presque entièrement en descente.</p></div></div></div></details><details class="major-section gear-major" id="gear-section"><summary><span class="major-icon">🎒</span><span><strong>Sac à dos &amp; équipement</strong><small>Checklist, progression et estimation du poids</small></span><span class="chev">⌄</span></summary><div class="major-body gear-body"><div class="shoe-choice-box"><h3>Chaussures — option</h3><p>Choisis simplement le type de chaussures prévu.</p><div class="choice-row shoe-radio-row"><div class="choice-option neutral"><input checked="" id="shoe-1" name="shoe-choice" type="radio" value="430"/><label for="shoe-1"><span class="choice-mark"></span><span class="choice-text">Chaussures de trail légères — 430 g</span></label></div><div class="choice-option neutral"><input id="shoe-2" name="shoe-choice" type="radio" value="700"/><label for="shoe-2"><span class="choice-mark"></span><span class="choice-text">Chaussures d’approche — 700 g</span></label></div></div></div><div class="category-progress" id="category-progress"><div class="category-segment"><span class="category-segment-label">Sur soi</span><div class="category-dots"><span class="gear-dot dot-gear-1" title="gear-1"></span><span class="gear-dot dot-gear-2" title="gear-2"></span><span class="gear-dot dot-gear-3" title="gear-3"></span><span class="gear-dot dot-gear-4" title="gear-4"></span><span class="gear-dot dot-gear-5" title="gear-5"></span><span class="gear-dot dot-gear-6" title="gear-6"></span><span class="gear-dot dot-gear-7" title="gear-7"></span><span class="gear-dot dot-gear-8" title="gear-8"></span><span class="gear-dot dot-gear-9" title="gear-9"></span></div></div><div class="category-segment"><span class="category-segment-label">Vêtements dans le sac</span><div class="category-dots"><span class="gear-dot dot-gear-10" title="gear-10"></span><span class="gear-dot dot-gear-11" title="gear-11"></span><span class="gear-dot dot-gear-12" title="gear-12"></span><span class="gear-dot dot-gear-13" title="gear-13"></span><span class="gear-dot dot-gear-14" title="gear-14"></span><span class="gear-dot dot-gear-15" title="gear-15"></span><span class="gear-dot dot-gear-16" title="gear-16"></span><span class="gear-dot dot-gear-17" title="gear-17"></span><span class="gear-dot dot-gear-18" title="gear-18"></span><span class="gear-dot dot-gear-19" title="gear-19"></span><span class="gear-dot dot-gear-20" title="gear-20"></span><span class="gear-dot dot-gear-21" title="gear-21"></span></div></div><div class="category-segment"><span class="category-segment-label">Nuit &amp; bivouac</span><div class="category-dots"><span class="gear-dot dot-gear-22" title="gear-22"></span><span class="gear-dot dot-gear-23" title="gear-23"></span><span class="gear-dot dot-gear-24" title="gear-24"></span><span class="gear-dot dot-gear-25" title="gear-25"></span><span class="gear-dot dot-gear-26" title="gear-26"></span><span class="gear-dot dot-gear-27" title="gear-27"></span><span class="gear-dot dot-gear-28" title="gear-28"></span></div></div><div class="category-segment"><span class="category-segment-label">Cuisine</span><div class="category-dots"><span class="gear-dot dot-gear-29" title="gear-29"></span><span class="gear-dot dot-gear-30" title="gear-30"></span><span class="gear-dot dot-gear-31" title="gear-31"></span><span class="gear-dot dot-gear-32" title="gear-32"></span><span class="gear-dot dot-gear-33" title="gear-33"></span><span class="gear-dot dot-gear-34" title="gear-34"></span><span class="gear-dot dot-gear-35" title="gear-35"></span><span class="gear-dot dot-gear-36" title="gear-36"></span><span class="gear-dot dot-gear-37" title="gear-37"></span><span class="gear-dot dot-gear-38" title="gear-38"></span></div></div><div class="category-segment"><span class="category-segment-label">Nourriture &amp; eau</span><div class="category-dots"><span class="gear-dot dot-gear-39" title="gear-39"></span><span class="gear-dot dot-gear-40" title="gear-40"></span><span class="gear-dot dot-gear-41" title="gear-41"></span><span class="gear-dot dot-gear-42" title="gear-42"></span><span class="gear-dot dot-gear-43" title="gear-43"></span><span class="gear-dot dot-gear-44" title="gear-44"></span></div></div><div class="category-segment"><span class="category-segment-label">Navigation</span><div class="category-dots"><span class="gear-dot dot-gear-45" title="gear-45"></span></div></div><div class="category-segment"><span class="category-segment-label">Sécurité &amp; montagne</span><div class="category-dots"><span class="gear-dot dot-gear-46" title="gear-46"></span><span class="gear-dot dot-gear-47" title="gear-47"></span><span class="gear-dot dot-gear-48" title="gear-48"></span><span class="gear-dot dot-gear-49" title="gear-49"></span><span class="gear-dot dot-gear-50" title="gear-50"></span><span class="gear-dot dot-gear-51" title="gear-51"></span></div></div><div class="category-segment"><span class="category-segment-label">Électronique</span><div class="category-dots"><span class="gear-dot dot-gear-52" title="gear-52"></span><span class="gear-dot dot-gear-53" title="gear-53"></span><span class="gear-dot dot-gear-54" title="gear-54"></span><span class="gear-dot dot-gear-55" title="gear-55"></span><span class="gear-dot dot-gear-56" title="gear-56"></span><span class="gear-dot dot-gear-57" title="gear-57"></span></div></div><div class="category-segment"><span class="category-segment-label">Hygiène &amp; confort</span><div class="category-dots"><span class="gear-dot dot-gear-58" title="gear-58"></span><span class="gear-dot dot-gear-59" title="gear-59"></span><span class="gear-dot dot-gear-60" title="gear-60"></span><span class="gear-dot dot-gear-61" title="gear-61"></span><span class="gear-dot dot-gear-62" title="gear-62"></span><span class="gear-dot dot-gear-63" title="gear-63"></span><span class="gear-dot dot-gear-64" title="gear-64"></span><span class="gear-dot dot-gear-65" title="gear-65"></span><span class="gear-dot dot-gear-66" title="gear-66"></span></div></div><div class="category-segment"><span class="category-segment-label">Sac</span><div class="category-dots"><span class="gear-dot dot-gear-67" title="gear-67"></span></div></div></div><div class="gear-grid"><details class="gear-category"><summary>Sur soi</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-food-key="shoes" data-location="worn" data-weight="430" id="gear-1" type="checkbox"/><label for="gear-1"><span class="gear-item-name">Chaussures</span><span class="gear-item-weight" id="gear-1-weight"><span class="shoe-weight-case shoe-430">430 g</span><span class="shoe-weight-case shoe-700">700 g</span></span><small class="food-weight-note" id="gear-1-note"></small></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="60" id="gear-2" type="checkbox"/><label for="gear-2"><span class="gear-item-name">Chaussettes de randonnée</span><span class="gear-item-weight" id="gear-2-weight">60 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="60" id="gear-3" type="checkbox"/><label for="gear-3"><span class="gear-item-name">Casquette</span><span class="gear-item-weight" id="gear-3-weight">60 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="30" id="gear-4" type="checkbox"/><label for="gear-4"><span class="gear-item-name">Lunettes de soleil</span><span class="gear-item-weight" id="gear-4-weight">30 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="450" id="gear-5" type="checkbox"/><label for="gear-5"><span class="gear-item-name">Bâtons de randonnée</span><span class="gear-item-weight" id="gear-5-weight">450 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="180" id="gear-6" type="checkbox"/><label for="gear-6"><span class="gear-item-name">Short</span><span class="gear-item-weight" id="gear-6-weight">180 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="140" id="gear-7" type="checkbox"/><label for="gear-7"><span class="gear-item-name">T-shirt</span><span class="gear-item-weight" id="gear-7-weight">140 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="50" id="gear-8" type="checkbox"/><label for="gear-8"><span class="gear-item-name">Sous-vêtements</span><span class="gear-item-weight" id="gear-8-weight">50 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="worn" data-weight="70" id="gear-9" type="checkbox"/><label for="gear-9"><span class="gear-item-name">Montre GPS</span><span class="gear-item-weight" id="gear-9-weight">70 g</span></label></div></div></details><details class="gear-category"><summary>Vêtements dans le sac</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="50" id="gear-10" type="checkbox"/><label for="gear-10"><span class="gear-item-name">Bonnet ou bandana</span><span class="gear-item-weight" id="gear-10-weight">50 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="320" id="gear-11" type="checkbox"/><label for="gear-11"><span class="gear-item-name">Doudoune</span><span class="gear-item-weight" id="gear-11-weight">320 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="350" id="gear-13" type="checkbox"/><label for="gear-13"><span class="gear-item-name">Veste Gore-Tex</span><span class="gear-item-weight" id="gear-13-weight">350 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="180" id="gear-14" type="checkbox"/><label for="gear-14"><span class="gear-item-name">Haut manches longues mérino</span><span class="gear-item-weight" id="gear-14-weight">180 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="250" id="gear-15" type="checkbox"/><label for="gear-15"><span class="gear-item-name">Pantalon ou legging</span><span class="gear-item-weight" id="gear-15-weight">250 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="60" id="gear-16" type="checkbox"/><label for="gear-16"><span class="gear-item-name">Chaussettes pour la nuit</span><span class="gear-item-weight" id="gear-16-weight">60 g</span></label></div></div></details><details class="gear-category"><summary>Nuit &amp; bivouac</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="0" id="gear-22" type="checkbox"/><label for="gear-22"><span class="gear-item-name">Bouchons d’oreilles</span><span class="gear-item-weight" id="gear-22-weight">0 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="510" id="gear-23" type="checkbox"/><label for="gear-23"><span class="gear-item-name">Matelas gonflable</span><span class="gear-item-weight" id="gear-23-weight">510 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="140" id="gear-24" type="checkbox"/><label for="gear-24"><span class="gear-item-name">Oreiller gonflable</span><span class="gear-item-weight" id="gear-24-weight">140 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="60" id="gear-25" type="checkbox"/><label for="gear-25"><span class="gear-item-name">Sous-cul</span><span class="gear-item-weight" id="gear-25-weight">60 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="900" id="gear-26" type="checkbox"/><label for="gear-26"><span class="gear-item-name">Sac de couchage</span><span class="gear-item-weight" id="gear-26-weight">900 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="1500" id="gear-27" type="checkbox"/><label for="gear-27"><span class="gear-item-name">Tente 2 places</span><span class="gear-item-weight" id="gear-27-weight">1500 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="150" id="gear-28" type="checkbox"/><label for="gear-28"><span class="gear-item-name">Sac à viande</span><span class="gear-item-weight" id="gear-28-weight">150 g</span></label></div></div></details><details class="gear-category"><summary>Cuisine</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="50" id="gear-29" type="checkbox"/><label for="gear-29"><span class="gear-item-name">Bol</span><span class="gear-item-weight" id="gear-29-weight">50 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="230" id="gear-30" type="checkbox"/><label for="gear-30"><span class="gear-item-name">Cartouche de gaz</span><span class="gear-item-weight" id="gear-30-weight">230 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="40" id="gear-31" type="checkbox"/><label for="gear-31"><span class="gear-item-name">Opinel</span><span class="gear-item-weight" id="gear-31-weight">40 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="20" id="gear-32" type="checkbox"/><label for="gear-32"><span class="gear-item-name">Briquet</span><span class="gear-item-weight" id="gear-32-weight">20 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="60" id="gear-33" type="checkbox"/><label for="gear-33"><span class="gear-item-name">Eco cup</span><span class="gear-item-weight" id="gear-33-weight">60 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="250" id="gear-34" type="checkbox"/><label for="gear-34"><span class="gear-item-name">Popote</span><span class="gear-item-weight" id="gear-34-weight">250 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="20" id="gear-35" type="checkbox"/><label for="gear-35"><span class="gear-item-name">Grande cuillère</span><span class="gear-item-weight" id="gear-35-weight">20 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="20" id="gear-36" type="checkbox"/><label for="gear-36"><span class="gear-item-name">Petit chiffon / mini éponge</span><span class="gear-item-weight" id="gear-36-weight">20 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="80" id="gear-37" type="checkbox"/><label for="gear-37"><span class="gear-item-name">Réchaud</span><span class="gear-item-weight" id="gear-37-weight">80 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="140" id="gear-38" type="checkbox"/><label for="gear-38"><span class="gear-item-name">Filtre à eau à pompe</span><span class="gear-item-weight" id="gear-38-weight">140 g</span></label></div></div></details><details class="gear-category"><summary>Nourriture &amp; eau</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-food-key="breakfast" data-location="pack" data-weight="0" id="gear-39" type="checkbox"/><label for="gear-39"><span class="gear-item-name">Muesli chocolat</span><span class="gear-item-weight" id="gear-39-weight"><span class="tar-food-weight" data-case="refuge-refuge-carry">250 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">250 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">250 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">250 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">250 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">250 g</span><span class="tar-food-weight" data-case="carry-carry-carry">250 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">250 g</span></span><small class="food-weight-note" id="gear-39-note"><span class="food-case food-case-gittaz-coire-beaufort">3 petit-déj × 250 g</span><span class="food-case food-case-gittaz-coire-short">4 petit-déj × 250 g</span><span class="food-case food-case-gittaz-carry-beaufort">3 petit-déj × 250 g</span><span class="food-case food-case-gittaz-carry-short">4 petit-déj × 250 g</span><span class="food-case food-case-carry-coire-beaufort">3 petit-déj × 250 g</span><span class="food-case food-case-carry-coire-short">4 petit-déj × 250 g</span><span class="food-case food-case-carry-carry-beaufort">3 petit-déj × 250 g</span><span class="food-case food-case-carry-carry-short">4 petit-déj × 250 g</span></small><span class="tar-food-detail"><span class="tar-food-weight" data-case="refuge-refuge-carry">1 petit-déj × 250 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">1 petit-déj × 250 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">1 petit-déj × 250 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">1 petit-déj × 250 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">1 petit-déj × 250 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">1 petit-déj × 250 g</span><span class="tar-food-weight" data-case="carry-carry-carry">1 petit-déj × 250 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">1 petit-déj × 250 g</span></span></label></div><div class="gear-item"><input class="gear-check" data-food-key="coffee" data-location="pack" data-weight="10" id="gear-40" type="checkbox"/><label for="gear-40"><span class="gear-item-name">Café instantané</span><span class="gear-item-weight" id="gear-40-weight"><span class="tar-food-weight" data-case="refuge-refuge-carry">10 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">10 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">10 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">10 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">10 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">10 g</span><span class="tar-food-weight" data-case="carry-carry-carry">10 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">10 g</span></span><small class="food-weight-note" id="gear-40-note"><span class="food-case food-case-gittaz-coire-beaufort">3 × 5 g</span><span class="food-case food-case-gittaz-coire-short">4 × 5 g</span><span class="food-case food-case-gittaz-carry-beaufort">3 × 5 g</span><span class="food-case food-case-gittaz-carry-short">4 × 5 g</span><span class="food-case food-case-carry-coire-beaufort">3 × 5 g</span><span class="food-case food-case-carry-coire-short">4 × 5 g</span><span class="food-case food-case-carry-carry-beaufort">3 × 5 g</span><span class="food-case food-case-carry-carry-short">4 × 5 g</span></small><span class="tar-food-detail"><span class="tar-food-weight" data-case="refuge-refuge-carry">2 sticks × 5 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">2 sticks × 5 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">2 sticks × 5 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">2 sticks × 5 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">2 sticks × 5 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">2 sticks × 5 g</span><span class="tar-food-weight" data-case="carry-carry-carry">2 sticks × 5 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">2 sticks × 5 g</span></span></label></div><div class="gear-item"><input class="gear-check" data-food-key="dinner" data-location="pack" data-weight="0" id="gear-41" type="checkbox"/><label for="gear-41"><span class="gear-item-name">Dîners — pâtes + soupe</span><span class="gear-item-weight" id="gear-41-weight"><span class="tar-food-weight" data-case="refuge-refuge-carry">140 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">140 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">140 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">140 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">140 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">140 g</span><span class="tar-food-weight" data-case="carry-carry-carry">140 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">140 g</span></span><small class="food-weight-note" id="gear-41-note"><span class="food-case food-case-gittaz-coire-beaufort">2 dîner(s) × 140 g</span><span class="food-case food-case-gittaz-coire-short">3 dîner(s) × 140 g</span><span class="food-case food-case-gittaz-carry-beaufort">2 dîner(s) × 140 g</span><span class="food-case food-case-gittaz-carry-short">3 dîner(s) × 140 g</span><span class="food-case food-case-carry-coire-beaufort">3 dîner(s) × 140 g</span><span class="food-case food-case-carry-coire-short">4 dîner(s) × 140 g</span><span class="food-case food-case-carry-carry-beaufort">3 dîner(s) × 140 g</span><span class="food-case food-case-carry-carry-short">4 dîner(s) × 140 g</span></small><span class="tar-food-detail"><span class="tar-food-weight" data-case="refuge-refuge-carry">1 dîner × 140 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">1 dîner × 140 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">1 dîner × 140 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">1 dîner × 140 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">1 dîner × 140 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">1 dîner × 140 g</span><span class="tar-food-weight" data-case="carry-carry-carry">1 dîner × 140 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">1 dîner × 140 g</span></span></label></div><div class="gear-item"><input class="gear-check" data-food-key="lunch" data-location="pack" data-weight="0" id="gear-42" type="checkbox"/><label for="gear-42"><span class="gear-item-name">Pique-niques — saucisson, fromage, pain</span><span class="gear-item-weight" id="gear-42-weight"><span class="tar-food-weight" data-case="refuge-refuge-carry">0 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">0 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">300 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">300 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">300 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">300 g</span><span class="tar-food-weight" data-case="carry-carry-carry">600 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">600 g</span></span><small class="food-weight-note" id="gear-42-note"><span class="food-case food-case-gittaz-coire-beaufort">1 pique-nique(s) × 300 g</span><span class="food-case food-case-gittaz-coire-short">3 pique-nique(s) × 300 g</span><span class="food-case food-case-gittaz-carry-beaufort">2 pique-nique(s) × 300 g</span><span class="food-case food-case-gittaz-carry-short">4 pique-nique(s) × 300 g</span><span class="food-case food-case-carry-coire-beaufort">1 pique-nique(s) × 300 g</span><span class="food-case food-case-carry-coire-short">3 pique-nique(s) × 300 g</span><span class="food-case food-case-carry-carry-beaufort">2 pique-nique(s) × 300 g</span><span class="food-case food-case-carry-carry-short">4 pique-nique(s) × 300 g</span></small><span class="tar-food-detail"><span class="tar-food-weight" data-case="refuge-refuge-carry">0 pique-nique(s) × 300 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">0 pique-nique(s) × 300 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">1 pique-nique(s) × 300 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">1 pique-nique(s) × 300 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">1 pique-nique(s) × 300 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">1 pique-nique(s) × 300 g</span><span class="tar-food-weight" data-case="carry-carry-carry">2 pique-nique(s) × 300 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">2 pique-nique(s) × 300 g</span></span></label></div><div class="gear-item"><input class="gear-check" data-food-key="snacks" data-location="pack" data-weight="0" id="gear-43" type="checkbox"/><label for="gear-43"><span class="gear-item-name">Snacks</span><span class="gear-item-weight" id="gear-43-weight"><span class="tar-food-weight" data-case="refuge-refuge-carry">400 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">400 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">400 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">400 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">400 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">400 g</span><span class="tar-food-weight" data-case="carry-carry-carry">400 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">400 g</span></span><small class="food-weight-note" id="gear-43-note"><span class="food-case food-case-gittaz-coire-beaufort">3,5 jour(s) × 200 g</span><span class="food-case food-case-gittaz-coire-short">5 jour(s) × 200 g</span><span class="food-case food-case-gittaz-carry-beaufort">3,5 jour(s) × 200 g</span><span class="food-case food-case-gittaz-carry-short">5 jour(s) × 200 g</span><span class="food-case food-case-carry-coire-beaufort">3,5 jour(s) × 200 g</span><span class="food-case food-case-carry-coire-short">5 jour(s) × 200 g</span><span class="food-case food-case-carry-carry-beaufort">3,5 jour(s) × 200 g</span><span class="food-case food-case-carry-carry-short">5 jour(s) × 200 g</span></small><span class="tar-food-detail"><span class="tar-food-weight" data-case="refuge-refuge-carry">2 jours × 200 g</span><span class="tar-food-weight" data-case="refuge-refuge-montenvers">2 jours × 200 g</span><span class="tar-food-weight" data-case="refuge-carry-carry">2 jours × 200 g</span><span class="tar-food-weight" data-case="refuge-carry-montenvers">2 jours × 200 g</span><span class="tar-food-weight" data-case="carry-refuge-carry">2 jours × 200 g</span><span class="tar-food-weight" data-case="carry-refuge-montenvers">2 jours × 200 g</span><span class="tar-food-weight" data-case="carry-carry-carry">2 jours × 200 g</span><span class="tar-food-weight" data-case="carry-carry-montenvers">2 jours × 200 g</span></span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="100" id="gear-44" type="checkbox"/><label for="gear-44"><span class="gear-item-name">Réserve alimentaire</span><span class="gear-item-weight" id="gear-44-weight">100 g</span></label></div><div class="water-weight-control compact"><h4>Eau portée</h4><p>Capacité : 3 L. Sélectionne la quantité réellement portée.</p><div class="water-choice-grid"><div class="water-choice"><input checked="" id="water-0" name="water-choice" type="radio" value="0"/><label for="water-0">0 L</label></div><div class="water-choice"><input id="water-1" name="water-choice" type="radio" value="500"/><label for="water-1">0,5 L</label></div><div class="water-choice"><input id="water-2" name="water-choice" type="radio" value="1000"/><label for="water-2">1 L</label></div><div class="water-choice"><input id="water-3" name="water-choice" type="radio" value="1500"/><label for="water-3">1,5 L</label></div><div class="water-choice"><input id="water-4" name="water-choice" type="radio" value="2000"/><label for="water-4">2 L</label></div><div class="water-choice"><input id="water-5" name="water-choice" type="radio" value="2500"/><label for="water-5">2,5 L</label></div><div class="water-choice"><input id="water-6" name="water-choice" type="radio" value="3000"/><label for="water-6">3 L</label></div></div></div></div></details><details class="gear-category"><summary>Navigation</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="220" id="gear-45" type="checkbox"/><label for="gear-45"><span class="gear-item-name">Téléphone avec cartes hors ligne</span><span class="gear-item-weight" id="gear-45-weight">220 g</span></label></div></div></details><details class="gear-category"><summary>Sécurité &amp; montagne</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="60" id="gear-46" type="checkbox"/><label for="gear-46"><span class="gear-item-name">Couverture de survie</span><span class="gear-item-weight" id="gear-46-weight">60 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="300" id="gear-47" type="checkbox"/><label for="gear-47"><span class="gear-item-name">Trousse de secours</span><span class="gear-item-weight" id="gear-47-weight">300 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="120" id="gear-48" type="checkbox"/><label for="gear-48"><span class="gear-item-name">Housse de pluie</span><span class="gear-item-weight" id="gear-48-weight">120 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="20" id="gear-49" type="checkbox"/><label for="gear-49"><span class="gear-item-name">Pastilles Micropur</span><span class="gear-item-weight" id="gear-49-weight">20 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="20" id="gear-50" type="checkbox"/><label for="gear-50"><span class="gear-item-name">Argent liquide</span><span class="gear-item-weight" id="gear-50-weight">20 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="0" id="gear-51" type="checkbox"/><label for="gear-51"><span class="gear-item-name">Carte bancaire</span><span class="gear-item-weight" id="gear-51-weight">0 g</span></label></div></div></details><details class="gear-category"><summary>Électronique</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="800" id="gear-52" type="checkbox"/><label for="gear-52"><span class="gear-item-name">Appareil photo</span><span class="gear-item-weight" id="gear-52-weight">800 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="90" id="gear-53" type="checkbox"/><label for="gear-53"><span class="gear-item-name">Lampe frontale</span><span class="gear-item-weight" id="gear-53-weight">90 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="30" id="gear-54" type="checkbox"/><label for="gear-54"><span class="gear-item-name">Chargeur de montre</span><span class="gear-item-weight" id="gear-54-weight">30 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="40" id="gear-55" type="checkbox"/><label for="gear-55"><span class="gear-item-name">Chargeur de téléphone</span><span class="gear-item-weight" id="gear-55-weight">40 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="50" id="gear-57" type="checkbox"/><label for="gear-57"><span class="gear-item-name">Écouteurs</span><span class="gear-item-weight" id="gear-57-weight">50 g</span></label></div></div></details><details class="gear-category"><summary>Hygiène &amp; confort</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="80" id="gear-58" type="checkbox"/><label for="gear-58"><span class="gear-item-name">Crème solaire</span><span class="gear-item-weight" id="gear-58-weight">80 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="40" id="gear-60" type="checkbox"/><label for="gear-60"><span class="gear-item-name">Sac(s) poubelle</span><span class="gear-item-weight" id="gear-60-weight">40 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="120" id="gear-61" type="checkbox"/><label for="gear-61"><span class="gear-item-name">Serviette microfibre</span><span class="gear-item-weight" id="gear-61-weight">120 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="40" id="gear-62" type="checkbox"/><label for="gear-62"><span class="gear-item-name">Sacs Ziplock</span><span class="gear-item-weight" id="gear-62-weight">40 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="50" id="gear-63" type="checkbox"/><label for="gear-63"><span class="gear-item-name">Mouchoirs</span><span class="gear-item-weight" id="gear-63-weight">50 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="70" id="gear-64" type="checkbox"/><label for="gear-64"><span class="gear-item-name">Brosse à dents + dentifrice</span><span class="gear-item-weight" id="gear-64-weight">70 g</span></label></div><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="120" id="gear-66" type="checkbox"/><label for="gear-66"><span class="gear-item-name">Lingettes toilette rapide</span><span class="gear-item-weight" id="gear-66-weight">120 g</span></label></div></div></details><details class="gear-category"><summary>Sac</summary><div class="gear-category-body"><div class="gear-item"><input class="gear-check" data-location="pack" data-weight="800" id="gear-67" type="checkbox"/><label for="gear-67"><span class="gear-item-name">Sac à dos</span><span class="gear-item-weight" id="gear-67-weight">800 g</span></label></div></div></details></div><div class="gear-dashboard"><div class="gear-stat"><b class="counter-output gear-progress-output" id="gear-progress"></b><span>checklist complétée</span></div><div class="gear-stat"><b class="counter-output pack-weight-output" id="pack-weight"></b><span>dans le sac</span></div><div class="gear-stat"><b class="counter-output worn-weight-output" id="worn-weight"></b><span>porté sur soi</span></div></div></div></details><div class="save-local-box"><span id="save-status">✓ Sauvegarde locale active</span><button id="reset-saved-state" type="button">Réinitialiser les choix</button></div><div class="footer">
+<p>Important : ces route notes sont un aide-mémoire construit à partir des GPX. Les horaires restent indicatifs et les bivouacs / échappatoires sont à adapter aux conditions du jour.</p>
+</div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const STORAGE_KEY = "route-notes-tar-v1";
+  function collectState() {
+    const state = {checks:{}, radios:{}, details:{}};
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+      if (el.id) state.checks[el.id] = el.checked;
+    });
+    document.querySelectorAll('input[type="radio"]').forEach(el => {
+      if (el.name && el.checked) state.radios[el.name] = el.value;
+    });
+    document.querySelectorAll('details').forEach((el,i) => {
+      state.details[el.id || ("details-"+i)] = el.open;
+    });
+    return state;
+  }
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState()));
+      const s=document.getElementById("save-status");
+      if(s){s.textContent="✓ Sauvegardé sur cet appareil";clearTimeout(window.__saveTimer);
+      window.__saveTimer=setTimeout(()=>s.textContent="✓ Sauvegarde locale active",1400);}
+    } catch(e) {}
+  }
+  function restoreState() {
+    try {
+      const raw=localStorage.getItem(STORAGE_KEY); if(!raw) return;
+      const state=JSON.parse(raw);
+      Object.entries(state.checks||{}).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.checked=!!v;});
+      Object.entries(state.radios||{}).forEach(([name,v])=>{
+        document.querySelectorAll('input[type="radio"]').forEach(e=>{if(e.name===name && e.value===v)e.checked=true;});
+      });
+      document.querySelectorAll('details').forEach((e,i)=>{
+        const k=e.id||("details-"+i); if(Object.prototype.hasOwnProperty.call(state.details||{},k))e.open=!!state.details[k];
+      });
+    } catch(e) {}
+  }
+  restoreState();
+  document.querySelectorAll('input[type="checkbox"],input[type="radio"]').forEach(e=>e.addEventListener("change",saveState));
+  document.querySelectorAll('details').forEach(e=>e.addEventListener("toggle",saveState));
+  const r=document.getElementById("reset-saved-state");
+  if(r)r.addEventListener("click",()=>{if(confirm("Réinitialiser tous les choix enregistrés pour ces Route Notes ?")){
+    try{localStorage.removeItem(STORAGE_KEY)}catch(e){} location.reload();
+  }});
+});
+</script></body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "Route Notes — Tour des Aiguilles Rouges",
+  "short_name": "Route Notes",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f1e4c8",
+  "theme_color": "#294331",
+  "icons": [
+    {
+      "src": "icon-180.png?v=4",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.PNG?v=4",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
